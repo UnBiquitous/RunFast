@@ -22,7 +22,7 @@ public class Team implements InputListener{
 
 	private Car car;
 	private CarTemplate carType;
-	private int thisTeamNumber;
+	private int thisTeamNumber, blockedMembers;
 
 	private UpDevice pilot;
 	private UpDevice copilot;
@@ -33,6 +33,7 @@ public class Team implements InputListener{
 		carType = null;
 		thisTeamNumber = teamNumber;
 		++teamNumber;
+		blockedMembers =0;
 		pilot = pilotDevice;
 		copilot = null;
 		assistants = new ArrayList<UpDevice>();
@@ -48,6 +49,7 @@ public class Team implements InputListener{
 	}*/
 	
 	public void initTeamCar(CarTemplate carType){
+		this.carType = carType;
 		car = new Car(430,470+thisTeamNumber*25,carType);
 	}
 	
@@ -92,7 +94,6 @@ public class Team implements InputListener{
 		switch(e.getInputCode()){
 			case InputEvent.IC_UP:
 				car.startRotation(Car.ROTATE_UP,0.0);
-				System.out.println("ROTOU!");
 				break;
 			case InputEvent.IC_DOWN:
 				car.startRotation(Car.ROTATE_DOWN,0.0);
@@ -282,9 +283,47 @@ public class Team implements InputListener{
 			number = 1;
 		if(copilot!=null)
 			++number;
-		
-		number += assistants.size();
+		if(assistants.size()>0)
+			number += assistants.size();
 		
 		return number;
+	}
+	
+	/**
+	 * If the device belongs to this team it is removed.
+	 * @param device
+	 */
+	public void removeMember(UpDevice device){
+		if(device.getName().equals(pilot.getName()))
+			pilot = null;
+		else if(device == copilot)
+			copilot = null;
+		else{
+			for(int i=0; i<assistants.size(); ++i){
+				if(assistants.get(i) == device){
+					assistants.remove(i);
+					--i;
+				}
+			}
+		}
+	}
+	
+	public void decreaseTeamNumber(){
+		--teamNumber;
+	}
+	
+	public void blockTeam(int numberOfMembers){
+		if(numberOfMembers > 0){
+			blockedMembers += numberOfMembers;
+			car.blockSpeed();
+		}
+	}
+	
+	public void unblockTeam(){
+		--blockedMembers;
+		if(blockedMembers<1){
+			blockedMembers = 0;
+			car.unblockSpeed();
+		}
 	}
 }

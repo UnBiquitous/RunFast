@@ -22,6 +22,8 @@ public class Car extends GameObject{
 	private static final int DECELERATION_RATE = 1;
 	private static final int SPEED_MODIFIER = 22;
 	
+	private static final int BLOCKED_SPEED = 60;
+	
 	private static final int SHOT_BOMB_DELAY = 400;
 	
 	private static final String SIGHT_IMAGE = "../images/game/sight.png";
@@ -46,7 +48,7 @@ public class Car extends GameObject{
 	
 	//Attributes
 	private int speed, speedMax, acceleration;
-	private boolean accelerating;
+	private boolean accelerating, isSpeedBlocked;
 	private double rotation, rotationSpecific, sightRotation, sightRotationSpecific, rotateRate;
 	private int rotateSense, sightRotateSense;
 	private int fuel;
@@ -115,6 +117,7 @@ public class Car extends GameObject{
 	private void initAttributes(CarTemplate carType) {
 		speed = 0;
 		speedMax = carType.getSpeedMax();
+		isSpeedBlocked = false;
 		acceleration = carType.getAcceleration();
 		accelerating = false;
 		rotation = 0.0;
@@ -190,6 +193,7 @@ public class Car extends GameObject{
 			explosion.setX(getX() + originalBox.width/2 - (originalBox.width - box.width)/2);
 			explosion.setY(getY() + originalBox.height/2 - (originalBox.height - box.height)/2);
 			speed = 0;
+			unEquipAll();
 		}
 	}
 	
@@ -231,8 +235,8 @@ public class Car extends GameObject{
 		/* Disposes all the graphics */
 		gSight.dispose();
 		gCar.dispose();
-		g.draw(originalBox);
-		g.draw(box);
+		//g.draw(originalBox);
+		//g.draw(box);
 		
 		//Updates shots
 		for(int i =0;i<shots.size();++i)
@@ -446,7 +450,10 @@ public class Car extends GameObject{
 	 */
 	private void accelerate() {
 		speed += acceleration;
-		if(speed>speedMax)
+		if(isSpeedBlocked){
+			if(speed>BLOCKED_SPEED)
+				speed = BLOCKED_SPEED;
+		}else if(speed>speedMax)
 			speed = speedMax;
 	}
 	
@@ -671,7 +678,7 @@ public class Car extends GameObject{
 			}
 		}else{
 			if(item!=null){
-				item.reactivate(option+1);
+				item.reactivate(option);
 				option = 0;
 				item = null;
 				enableOption=false;
@@ -803,7 +810,7 @@ public class Car extends GameObject{
 	public void unEquipAll() {
 		defense -= equipDefense*Equip.EQUIP_BONUS_DEFENSE;
 		attack -= equipPower*Equip.EQUIP_BONUS_POWER;
-		speed -= equipSpeed*Equip.EQUIP_BONUS_SPEED;
+		speedMax -= equipSpeed*Equip.EQUIP_BONUS_SPEED;
 		equipDefense = equipPower = equipSpeed = 0;
 	}
 	
@@ -876,6 +883,10 @@ public class Car extends GameObject{
 
 	public int getMoney() {
 		return money;
+	}
+	
+	public void increaseMoney(int bonus){
+		money += bonus;
 	}
 	
 	//Rotations
@@ -978,5 +989,19 @@ public class Car extends GameObject{
 			return item.getItemImage();
 		return null;
 	}
+
+	/**
+	 * @return the isSpeedBloqued
+	 */
+	public boolean isSpeedBlocked() {
+		return isSpeedBlocked;
+	}
 	
+	public void unblockSpeed() {
+		isSpeedBlocked = false;
+	}
+	
+	public void blockSpeed() {
+		isSpeedBlocked = true;
+	}
 }

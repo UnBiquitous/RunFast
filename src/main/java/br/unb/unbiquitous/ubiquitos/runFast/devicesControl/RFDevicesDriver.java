@@ -12,6 +12,7 @@ import org.unbiquitous.uos.core.messageEngine.dataType.UpService.ParameterType;
 import org.unbiquitous.uos.core.messageEngine.messages.ServiceCall;
 import org.unbiquitous.uos.core.messageEngine.messages.ServiceResponse;
 
+import br.unb.unbiquitous.ubiquitos.runFast.game.Team;
 import br.unb.unbiquitous.ubiquitos.runFast.states.StateManager;
 
 public class RFDevicesDriver implements UosDriver{
@@ -36,12 +37,21 @@ public class RFDevicesDriver implements UosDriver{
 		driver.addService("getTeamsInfos");
 		driver.addService("updateStateInfo")
 			.addParameter("state", ParameterType.MANDATORY);
+		
 		driver.addService("isInGame");
+		driver.addService("bonusResult")
+			.addParameter("deviceName", ParameterType.MANDATORY)
+			.addParameter("points", ParameterType.MANDATORY);
+		driver.addService("breakResult")
+			.addParameter("deviceName", ParameterType.MANDATORY);
+		
 		driver.addService("requestPlayerJoin")
 			.addParameter("deviceName", ParameterType.MANDATORY)
 			.addParameter("teamNumber", ParameterType.MANDATORY)
 			.addParameter("character", ParameterType.MANDATORY)
 			.addParameter("carType", ParameterType.OPTIONAL);
+		driver.addService("playerQuit")
+			.addParameter("deviceName", ParameterType.MANDATORY);
 				
 		return driver;
 	}
@@ -122,6 +132,51 @@ public class RFDevicesDriver implements UosDriver{
 	}
 	
 	/**
+	 * Increases the team money with the bonusResult of this device.
+	 * @param serviceCall
+	 * @param serviceResponse
+	 * @param messageContext
+	 */
+	public void bonusResult(ServiceCall serviceCall, 
+			ServiceResponse serviceResponse, UOSMessageContext messageContext) {
+
+		UpDevice device = getDevice(serviceCall.getParameterString("deviceName"));
+		int bonus = (Integer) serviceCall.getParameter("bonus");
+		
+		List<Team> teams = devicesController.getTeams();
+		
+		for(int i=0; i<teams.size(); ++i){
+			if((teams.get(i).getPilot()==device)||
+					(teams.get(i).getCopilot()==device)||
+					(teams.get(i).getAssistants().contains(device))){
+				teams.get(i).getCar().increaseMoney(bonus);
+			}
+		}
+	}
+	
+	/**
+	 * Increases the team money with the bonusResult of this device.
+	 * @param serviceCall
+	 * @param serviceResponse
+	 * @param messageContext
+	 */
+	public void breakResult(ServiceCall serviceCall, 
+			ServiceResponse serviceResponse, UOSMessageContext messageContext) {
+
+		UpDevice device = getDevice(serviceCall.getParameterString("deviceName"));
+		
+		List<Team> teams = devicesController.getTeams();
+		
+		for(int i=0; i<teams.size(); ++i){
+			if((teams.get(i).getPilot()==device)||
+					(teams.get(i).getCopilot()==device)||
+					(teams.get(i).getAssistants().contains(device))){
+				teams.get(i).unblockTeam();
+			}
+		}
+	}
+	
+	/**
 	 * A new device requests a place in the game.
 	 * @param serviceCall
 	 * @param serviceResponse
@@ -146,6 +201,17 @@ public class RFDevicesDriver implements UosDriver{
 			hadJoined = devicesController.addPlayer(null, device, character);
 		
 		serviceResponse.addParameter("hadJoined", hadJoined);
+	}
+	
+	/**
+	 * One device leaves the game.
+	 * @param serviceCall
+	 * @param serviceResponse
+	 * @param messageContext
+	 */
+	public void playerQuit(ServiceCall serviceCall, 
+			ServiceResponse serviceResponse, UOSMessageContext messageContext) {
+		devicesController.playerQuit(getDevice(serviceCall.getParameterString("deviceName")));
 	}
 	
 	/**

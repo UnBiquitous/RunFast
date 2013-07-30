@@ -20,6 +20,8 @@ public class StateManager implements Runnable{
 	public static final int STATE_LOSE      = 5;
 	public static final int STATE_QUIT      = 6;
 	
+	private static final int DELAY = 33;
+	
 	private State estadoAtual;
 	private	Stack stack;
 	private Thread mainThread;
@@ -27,8 +29,6 @@ public class StateManager implements Runnable{
 	private DevicesController devicesController;
 	
 	private Gateway gateway;
-	
-	private final int DELAY = 33;
 	
 	public StateManager(Gateway gateway){
 		this.gateway = gateway;
@@ -38,7 +38,7 @@ public class StateManager implements Runnable{
 
 		estadoAtual = new StateMenu();
 		estadoAtual.load(devicesController);
-		Window.GetInstance().troca(estadoAtual);
+		Window.GetInstance().change(estadoAtual);
 
 		stack = new Stack();
 	}
@@ -77,6 +77,9 @@ public class StateManager implements Runnable{
     	    	case STATE_GAME:
     	    		changeState(new StateGame(), STATE_GAME);
     	    		break;
+    	    	case STATE_WIN:
+    	    		changeState(new StateWin(), STATE_WIN);
+    	    		break;
     	    	case STATE_QUIT:
     	    		quit = true;
     	    		break;
@@ -103,6 +106,8 @@ public class StateManager implements Runnable{
             	dt = DELAY;
             }
         }
+        
+        devicesController.endGame();
         System.exit(0);
 	}
 	
@@ -119,7 +124,7 @@ public class StateManager implements Runnable{
 		stack = estadoAtual.unload();
 		estadoAtual = newState;
 		estadoAtual.load(devicesController, stack);
-		Window.GetInstance().troca(estadoAtual);
+		Window.GetInstance().change(estadoAtual);
 	}
 	
 }

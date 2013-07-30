@@ -61,9 +61,9 @@ public class CarShower extends GameObject{
         gShower.setColor(Color.WHITE);
         gShower.setFont(font);
 
-        gShower.drawString(TXT_TEAM   +teamName         , box.x+cameraX, box.y+cameraY +(metr.getHeight()+5));
-        gShower.drawString(TXT_SPEED  +car.getSpeed()   , box.x+cameraX, box.y+cameraY +(metr.getHeight()+5)*2);
-        gShower.drawString(TXT_FUEL   +car.getFuel()    , box.x+cameraX, box.y+cameraY +(metr.getHeight()+5)*3);
+        gShower.drawString(TXT_TEAM   +teamName         , box.x+cameraX, box.y+cameraY +(metr.getHeight()+5)*2);
+        gShower.drawString(TXT_SPEED  +car.getSpeed()   , box.x+cameraX, box.y+cameraY +(metr.getHeight()+5)*3);
+        //gShower.drawString(TXT_FUEL   +car.getFuel()    , box.x+cameraX, box.y+cameraY +(metr.getHeight()+5)*3);
         gShower.drawString(TXT_TRACKS +car.getLaps()    , box.x+cameraX, box.y+cameraY +(metr.getHeight()+5)*4);
         gShower.drawString(TXT_POWER  +car.getAttack()  , box.x+cameraX, box.y+cameraY +(metr.getHeight()+5)*5);
         gShower.drawString(TXT_DEFENSE+car.getDefense() , box.x+cameraX, box.y+cameraY +(metr.getHeight()+5)*6);

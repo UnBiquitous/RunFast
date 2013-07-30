@@ -1,7 +1,7 @@
 package br.unb.unbiquitous.ubiquitos.runFast;
 
 import org.unbiquitous.uos.core.ContextException;
-import org.unbiquitous.uos.core.UOSApplicationContext;
+import org.unbiquitous.uos.core.UOS;
 
 /**
  * main
@@ -13,7 +13,7 @@ public class UosStarter {
 		stateManager.begin();
 	}*/
 	public static void main(String[] args) throws ContextException {
-		UOSApplicationContext uosApplicationContext = new UOSApplicationContext();
+		UOS uosApplicationContext = new UOS();
 		uosApplicationContext.init();
 	}
 }

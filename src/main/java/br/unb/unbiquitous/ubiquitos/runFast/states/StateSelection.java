@@ -69,26 +69,6 @@ public class StateSelection extends State implements InputListener{
 	}
 	
 	private void initPilots() {
-		/*
-		pilots = new int[2];
-        pilots[0] = 1;
-        pilots[1] = 3;
-        //pilots[2] = 3;
-        //pilots[3] = 4;
-        
-        pilotsPosition = new int[2];
-        pilotsPosition[0] = 0;
-        pilotsPosition[1] = 0;
-        //pilotsPosition[2] = 0;
-        //pilotsPosition[3] = 0;
-        
-        pilotsClosed = new boolean[2];
-        pilotsClosed[0] = false;
-        pilotsClosed[1] = false;
-        //pilotsClosed[2] = false;
-        //pilotsClosed[3] = false;
-        */
-		
 		pilots = new ArrayList<UpDevice>();
 		pilotsPosition = new ArrayList<Integer>();
 		pilotsClosed = new ArrayList<Boolean>();
@@ -128,6 +108,7 @@ public class StateSelection extends State implements InputListener{
 	
 	private void loadPilots() {
 		List<Team> teams = devicesController.getTeams();
+		
 		if(pilots.size() < teams.size()) {
 			for(int i=pilots.size(); i<teams.size(); ++i) {
 				pilots.add(teams.get(i).getPilot());
@@ -136,6 +117,7 @@ public class StateSelection extends State implements InputListener{
 			}
 		}
 	}
+	
 
 	@Override
 	public void load(DevicesController devController, Stack stack) {
@@ -349,7 +331,17 @@ public class StateSelection extends State implements InputListener{
 	}
 
 	public void deviceGotOut(DevicesEvent e) {
-		loadPilots();
+		List<Team> teams = devicesController.getTeams();
+		
+		if(pilots.size() > teams.size()) {
+			for(int i=0; i<pilots.size(); ++i) {
+				if(pilots.get(i)==e.getDevice()){
+					pilots.remove(i);
+					pilotsPosition.remove(i);
+					pilotsClosed.remove(i);
+				}
+			}
+		}
 	}
 
 }

@@ -27,4 +27,8 @@ public abstract class State extends JPanel implements DevicesListener{
 	}
 	public abstract int update(int dt);
 	public abstract void render();
+	
+	public void endGame(){
+		devicesController.endGame();
+	}
 }

@@ -3,6 +3,8 @@ package br.unb.unbiquitous.ubiquitos.runFast.ui;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import br.unb.unbiquitous.ubiquitos.runFast.states.State;
+
 public class Window extends JFrame{
 
 	/**
@@ -23,12 +25,22 @@ public class Window extends JFrame{
 		return window;
 	}
 	
-	public Window() {
+	private Window() {
 		//super.setIconImage(new ImageIcon(getClass().getResource("boneco.png")).getImage());
 		
 		//add(new Board());
         setTitle("Run Fast!");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        
+        //setDefaultCloseOperation(EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent e) {
+            	JPanel panel = (JPanel) getContentPane();
+            	if(panel instanceof State)
+            		((State)panel).endGame();
+                System.exit(0);
+            }
+        });
+        
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setLocationRelativeTo(null);
         setVisible(true);
@@ -36,7 +48,7 @@ public class Window extends JFrame{
 		//this.setExtendedState(MAXIMIZED_BOTH);
 	}
 	
-	public void troca (JPanel painel) {
+	public void change(JPanel painel) {
 		window.remove(window.getContentPane());
 		window.setContentPane(painel);
 		window.setVisible(true);

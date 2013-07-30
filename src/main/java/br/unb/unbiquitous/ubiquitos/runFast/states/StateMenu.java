@@ -44,8 +44,8 @@ public class StateMenu extends State implements InputListener{
 	private int selectedOption = OPT_PLAY;
 	private int nextState = StateManager.SAME_STATE;
 	
-	private int B_WIDTH;
-    private int B_HEIGHT;
+	private static int B_WIDTH;
+    private static int B_HEIGHT;
 	
 	public StateMenu(){
 		InputManager.GetInstance().addInputListener(this);
@@ -124,6 +124,7 @@ public class StateMenu extends State implements InputListener{
         };
                 
         Toolkit.getDefaultToolkit().sync();
+        g2d.dispose();
         g.dispose();
     }
 

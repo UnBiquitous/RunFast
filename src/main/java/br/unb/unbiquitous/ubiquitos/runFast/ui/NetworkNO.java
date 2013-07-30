@@ -15,7 +15,7 @@ public class NetworkNO extends EthernetTCPConnectionManager{
 	
 	public NetworkDevice getNetworkDevice() {
 		if(serverDevice == null){
-		 	return new EthernetDevice("192.168.1.5", 14984, EthernetConnectionType.TCP);
+		 	return new EthernetDevice("192.168.1.6", 14984, EthernetConnectionType.TCP);
 		}
 		return serverDevice;
 	}

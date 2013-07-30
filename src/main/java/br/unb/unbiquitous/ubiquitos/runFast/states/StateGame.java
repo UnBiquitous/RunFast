@@ -55,7 +55,7 @@ public class StateGame extends State{
 
 	@Override
 	public int update(int dt) {
-		map.update(dt);
+		returnState = map.update(dt);
 		return returnState;
 	}
 

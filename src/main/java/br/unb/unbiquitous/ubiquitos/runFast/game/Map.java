@@ -1,5 +1,7 @@
 package br.unb.unbiquitous.ubiquitos.runFast.game;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -16,6 +18,8 @@ import javax.swing.JPanel;
 import br.unb.unbiquitous.ubiquitos.runFast.devicesControl.DevicesController;
 import br.unb.unbiquitous.ubiquitos.runFast.inputs.InputManager;
 import br.unb.unbiquitous.ubiquitos.runFast.states.Stack;
+import br.unb.unbiquitous.ubiquitos.runFast.states.StateManager;
+import br.unb.unbiquitous.ubiquitos.runFast.ui.Window;
 
 public class Map extends GameObject{
 
@@ -25,12 +29,17 @@ public class Map extends GameObject{
 	private static final int MAX_EQUIPS = 3;
 	
 	private static final String MAP_IMAGE_PATH = "../images/game/map.jpg";
+
+	private static final int MAP_TIME = 120000;
+	private static final int MAP_TEAM_INCREASE_TIME = 10000;
 	
 	private DevicesController devicesController;
 	
 	private Image background;
 	
 	private Random random = null;
+	
+	private int time;
 	
 	private List<Team> teams;
 	private List<CarShower> teamsShowers;
@@ -51,9 +60,9 @@ public class Map extends GameObject{
 	Line2D lineBLB = new Line2D.Float( 213, 531,  298, 572);
 	Line2D lineBRR = new Line2D.Float(1084, 531, 1125, 447);
 	Line2D lineBRB = new Line2D.Float(1000, 572, 1084, 531);
-	RoundRectangle2D exteriorBounds = new RoundRectangle2D.Float(170, 84, 958, 490, 300, 300);
+	RoundRectangle2D exteriorBounds = new RoundRectangle2D.Float(166, 82, 962, 494, 300, 300);
 	//Interior Bounds:
-	RoundRectangle2D interiorBounds = new RoundRectangle2D.Float(288, 200, 722, 258, 90, 90);
+	RoundRectangle2D interiorBounds = new RoundRectangle2D.Float(290, 202, 720, 256, 90, 90);
 	//Start line:
 	Rectangle2D startBounds = new Rectangle2D.Float(450,456,20,120);
 	
@@ -82,6 +91,7 @@ public class Map extends GameObject{
         devicesController = devController;
         
         random = new Random();
+        time = MAP_TIME;
         
         initFromStack(devController, stack);
 	}
@@ -120,6 +130,8 @@ public class Map extends GameObject{
 
 	@Override
 	public int update(int dt) {
+		time -= dt;
+		
 		generateEquips();
 		generateItems();
 		
@@ -148,13 +160,14 @@ public class Map extends GameObject{
 		for(int i=0;i<traps.size();i++)
 			traps.get(i).update(dt);
 		
-		return 0;
+		return verifyGameTime();
 	}
 
 	@Override
 	public void render(Graphics2D g, int cameraX, int cameraY, JPanel panel) {
 		Graphics2D g2d = (Graphics2D) g.create();
 		g2d.drawImage(background, getX()+cameraX, getY()+cameraY, panel);
+		/*
 		g2d.draw(exteriorBounds);
 		g2d.draw(interiorBounds);
 		g2d.draw(lineTLL);
@@ -166,6 +179,7 @@ public class Map extends GameObject{
 		g2d.draw(lineBRR);
 		g2d.draw(lineBRB);
 		g2d.draw(startBounds);
+		*/
 
 		for(int i=0;i<equips.size();i++)
 			equips.get(i).render(g2d, 0, 0, panel);
@@ -183,6 +197,11 @@ public class Map extends GameObject{
 				teamsShowers.get(i).render(g2d, 0, 0, panel);
 		}
 		
+		//Write race time
+		g2d.setColor(Color.WHITE);
+		g2d.setFont(new Font("Helvetica", Font.BOLD, 24));
+		g2d.drawString(""+(time/1000), Window.WINDOW_WIDTH/2 - 10, 50);
+		
 		g2d.dispose();
 	}
 	
@@ -192,16 +211,16 @@ public class Map extends GameObject{
 		if((equips.size()<(MAX_EQUIPS*teams.size()))&&(chance == 1)){
 			switch(random.nextInt(4)){
 			case 0://Left
-				equips.add(new Equip(128+60+random.nextInt(80), 180+random.nextInt(280), random.nextInt(3)+1));
+				equips.add(new Equip(128+60+random.nextInt(80), 180+random.nextInt(280), random.nextInt(4)+1));
 				break;
 			case 1://Top
-				equips.add(new Equip(128+150+random.nextInt(750), 100+random.nextInt(80), random.nextInt(3)+1));
+				equips.add(new Equip(128+150+random.nextInt(750), 100+random.nextInt(80), random.nextInt(4)+1));
 				break;
 			case 2://Right
-				equips.add(new Equip(128+900+random.nextInt(80), 180+random.nextInt(280), random.nextInt(3)+1));
+				equips.add(new Equip(128+900+random.nextInt(80), 180+random.nextInt(280), random.nextInt(4)+1));
 				break;
 			case 3://Bottom
-				equips.add(new Equip(128+150+random.nextInt(750), 470+random.nextInt(80), random.nextInt(3)+1));
+				equips.add(new Equip(128+150+random.nextInt(750), 470+random.nextInt(80), random.nextInt(4)+1));
 				break;
 			}
 		}
@@ -225,6 +244,14 @@ public class Map extends GameObject{
 				break;
 			}
 		}
+	}
+	
+	private int verifyGameTime(){
+		if(time < -500){
+			devicesController.endRace();
+			return StateManager.STATE_WIN;
+		}
+		return StateManager.SAME_STATE;
 	}
 	
 	/**
@@ -406,7 +433,7 @@ public class Map extends GameObject{
 	 * Based in possible change of the size of teams.
 	 */
 	public void updateTeams(){
-		//If there is extra teams
+		//If there is a new team
 		if(teamsShowers.size() < teams.size()){
 			boolean found = false;
 			for(int i=0; i<teams.size(); ++i){
@@ -419,6 +446,9 @@ public class Map extends GameObject{
 					//teams.get(i).initTeamCar(new CarTemplate(CarTemplate.CAR_BLUE));
 					InputManager.GetInstance().addInputListener(teams.get(i));
 					teamsShowers.add(new CarShower(0+(i%2*1155),0+(i/2*300),teams.get(i)));
+					
+					//increases game time
+					time += MAP_TEAM_INCREASE_TIME;
 				}
 			}
 		//If there is less teams 
@@ -447,9 +477,9 @@ public class Map extends GameObject{
 	}
 	
 	public Team getTeam(int number) {
-		if(number > teams.size() || number < 1)
+		if(number > (teams.size()-1) || (number < 0))
 			return null;
-		return teams.get(number-1);
+		return teams.get(number);
 	}
 
 	/**

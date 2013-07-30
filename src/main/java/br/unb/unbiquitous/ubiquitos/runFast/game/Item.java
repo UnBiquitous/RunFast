@@ -2,16 +2,19 @@ package br.unb.unbiquitous.ubiquitos.runFast.game;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.io.File;
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
-import org.unbiquitous.driver.execution.executeAgent.Agent;
-import org.unbiquitous.driver.execution.executeAgent.AgentUtil;
 import org.unbiquitous.uos.core.adaptabitilyEngine.Gateway;
+import org.unbiquitous.uos.core.adaptabitilyEngine.ServiceCallException;
+import org.unbiquitous.uos.core.messageEngine.dataType.UpDevice;
+
+import br.unb.unbiquitous.ubiquitos.runFast.devicesControl.DevicesController;
 
 public class Item extends GameObject{
 
@@ -50,6 +53,7 @@ public class Item extends GameObject{
         itemType = Math.abs((gerador.nextInt()%NUMBER_OF_ITEM_TYPES));
         System.out.print(itemType);
 		ImageIcon ii = null;
+		//itemType = 2;
 		switch(itemType) {
 			case ITEM_TYPE_TRAP:
 				ii = new ImageIcon(getClass().getResource(Trap.OIL_PATH));
@@ -90,7 +94,42 @@ public class Item extends GameObject{
 				Map.getInstance().addTrap(new Trap(car.getX(),car.getY(),Trap.TRAP_TYPE_OIL));
 				break;
 			case ITEM_TYPE_BONUS:
-				needSelection = true;
+				Gateway gateway = Map.getInstance().getDevicesController().getGateway();
+				List<Team> teams = Map.getInstance().getDevicesController().getTeams();
+				boolean found =false;
+				int option = 0;
+				for(int i=0; (i<teams.size())&&(!found); ++i){
+					if(teams.get(i).getCar()==car){
+						found = true;
+						option = i;
+					}
+				}
+				
+				try {
+					java.util.Map<String, Object> map = new HashMap<String, Object>();
+					map.put("deviceName", gateway.getCurrentDevice().getName());
+					Map.getInstance().getDevicesController();
+					
+					List<UpDevice> devices = new ArrayList<UpDevice>();
+					if(Map.getInstance().getTeam(option).getNumberOfPlayers()>2){
+						if(Map.getInstance().getTeam(option).getAssistants().size()>0)
+							devices = Map.getInstance().getTeam(option).getAssistants();
+					}else if(Map.getInstance().getTeam(option).getNumberOfPlayers()>1){
+						if(Map.getInstance().getTeam(option).getAssistants().size()>0)
+							devices = Map.getInstance().getTeam(option).getAssistants();
+						if(Map.getInstance().getTeam(option).getCopilot()!=null)
+							devices.add(Map.getInstance().getTeam(option).getCopilot());
+					}else{
+						if(Map.getInstance().getTeam(option).getPilot()!=null)
+							devices.add(Map.getInstance().getTeam(option).getPilot());
+					}
+					for(int k=0; k<devices.size(); ++k)
+						gateway.callService(devices.get(k), "beginMGBonus",
+								DevicesController.RF_INPUT_DRIVER, null, null, map);
+				} catch (ServiceCallException e) {
+					e.printStackTrace();
+				}
+				//needSelection = true;
 				break;
 			case ITEM_TYPE_BREAK:
 				needSelection = true;
@@ -107,20 +146,69 @@ public class Item extends GameObject{
 	}
 	
 	public void reactivate(int option) {
+		Gateway gateway = Map.getInstance().getDevicesController().getGateway();
 		
 		switch (itemType) {
-			case ITEM_TYPE_BONUS:
+			/*case ITEM_TYPE_BONUS:
+				///*
 				try {
-					File file;
-					file = new File("../bonusminigame.apk");
-					AgentUtil.getInstance().move(new ItemAgent(), file, Map.getInstance().getTeam(option).getAssistants().get(0),
+					java.util.Map<String, Object> map = new HashMap<String, Object>();
+					map.put("deviceName", gateway.getCurrentDevice().getName());
+					Map.getInstance().getDevicesController();
+					gateway.callService(Map.getInstance().getTeam(option).getAssistants().get(0),
+							"beginMGBonus", DevicesController.RF_INPUT_DRIVER, null, null, map);
+				} catch (ServiceCallException e) {
+					e.printStackTrace();
+				}
+				///*
+				try {
+					File fileJar = new File(getClass().getResource("../minis/bonusminigame.jar").toURI());
+					ClassToolbox box = new ClassToolbox();
+                    ClassLoader loader = box.load(new FileInputStream(fileJar));
+                   
+                    Class<?> clazz = loader.loadClass("br.unbiquitous.ubiquitos.runFast.minigames.bonusmg.ItemAgent");
+                    Serializable agent = (Serializable)clazz.newInstance();
+
+                    File file;
+					file = new File(getClass().getResource("../minis/bonusminigame.apk").toURI());
+					System.out.println("../minis/bonusminigame.apk is "+file.exists());
+                    //ItemAgent agent = new ItemAgent();
+					//agent.init(Map.getInstance().getDevicesController().getGateway());
+					AgentUtil.getInstance().move(agent, file, Map.getInstance().getTeam(option).getAssistants().get(0),
 							Map.getInstance().getDevicesController().getGateway());
-					System.out.println("DEVIA TER ENVIADO!!!!!!!!!!!!!");
+					System.out.println("ENVIOUUU!!!!!!!!!!!!!");
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				break;
+				break;*/
 			case ITEM_TYPE_BREAK:
+				try {
+					java.util.Map<String, Object> map = new HashMap<String, Object>();
+					map.put("deviceName", gateway.getCurrentDevice().getName());
+					map.put("helpNumber", ""+Map.getInstance().getTeam(option).getNumberOfPlayers());
+					
+					List<UpDevice> devices = new ArrayList<UpDevice>();
+					if(Map.getInstance().getTeam(option).getNumberOfPlayers()>1){
+						if(Map.getInstance().getTeam(option).getAssistants().size()>0)
+							devices = Map.getInstance().getTeam(option).getAssistants();
+						if(Map.getInstance().getTeam(option).getCopilot()!=null)
+							devices.add(Map.getInstance().getTeam(option).getCopilot());
+					}else if(Map.getInstance().getTeam(option).getNumberOfPlayers()==1){
+						if(Map.getInstance().getTeam(option).getPilot()!=null)
+							devices.add(Map.getInstance().getTeam(option).getPilot());
+						if(Map.getInstance().getTeam(option).getCopilot()!=null)
+							devices.add(Map.getInstance().getTeam(option).getCopilot());
+						if(Map.getInstance().getTeam(option).getAssistants().size()>0)
+							devices.add(Map.getInstance().getTeam(option).getAssistants().get(0));
+					}
+					for(int k=0; k<devices.size(); ++k)
+						gateway.callService(devices.get(k), "beginMGBreak",
+								DevicesController.RF_INPUT_DRIVER, null, null, map);
+					
+					Map.getInstance().getTeam(option).blockTeam(devices.size());
+				} catch (ServiceCallException e) {
+					e.printStackTrace();
+				}
 				break;
 			case ITEM_TYPE_UNEQUIP:
 				Map.getInstance().getTeam(option).getCar().unEquipAll();
@@ -139,18 +227,4 @@ public class Item extends GameObject{
 		return itemImage;
 	}
 	
-	public class ItemAgent extends Agent implements Serializable{
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 5445065617576954323L;
-
-		@Override
-		public void run(Gateway gateway) {
-			System.out.println("running");
-		}
-		
-	}
-
 }

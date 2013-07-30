@@ -274,10 +274,10 @@ public class InputManager implements UosEventListener, KeyListener{
 	}
 	
 	public void handleEvent(Notify notify) {//ADDED CASTERS
-		System.out.println("RUNFAST!" +
-				"\n handleEvent: NOTIFY_INPUT_CODE  "+notify.getParameter(NOTIFY_INPUT_CODE)+
-				"\n handleEvent: NOTIFY_DEVNAME  "+notify.getParameter(NOTIFY_DEVNAME)+
-				"\n handleEvent: NOTIFY_DEVNAME  "+notify.getParameter(NOTIFY_PERFORMED));
+		//System.out.println("RUNFAST!" +
+		//		"\n handleEvent: NOTIFY_INPUT_CODE  "+notify.getParameter(NOTIFY_INPUT_CODE)+
+		//		"\n handleEvent: NOTIFY_DEVNAME  "+notify.getParameter(NOTIFY_DEVNAME)+
+		//		"\n handleEvent: NOTIFY_DEVNAME  "+notify.getParameter(NOTIFY_PERFORMED));
 		
 		inputCode = Integer.parseInt((String) notify.getParameter(NOTIFY_INPUT_CODE));
 		if((inputCode&InputEvent.IC_WITH_INTENSITY)!=0)
