@@ -8,6 +8,10 @@ import org.unbiquitous.uos.core.ontologyEngine.api.OntologyUndeploy;
 
 import br.unb.unbiquitous.ubiquitos.runFast.states.StateManager;
 
+/**
+ * Game uOS application, used to start the game by the uOS.
+ * 
+ */
 public class GameConsole implements UosApplication{
 
 	public void start(Gateway gateway, OntologyStart ontology) {

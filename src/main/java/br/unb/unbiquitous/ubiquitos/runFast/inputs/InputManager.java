@@ -14,17 +14,24 @@ import org.unbiquitous.uos.core.messageEngine.messages.Notify;
 
 import br.unb.unbiquitous.ubiquitos.runFast.ui.Window;
 
+/**
+ * Class which receives the inputs, then treats them and passes the corresponding
+ * game input event to the game listeners.
+ *
+ */
 public class InputManager implements UosEventListener, KeyListener{
 
-	//Improvised, MIGHT BE DELETED IN THE FUTURE
+	//Used to use the keyboard
 	public static final UpDevice DEVICE_1 = new UpDevice("1");
 	public static final UpDevice DEVICE_2 = new UpDevice("2");
 	public static final UpDevice DEVICE_3 = new UpDevice("3");
 	//private static final int DEVICE_4 = 4;
 	
+	//Mobile InputDriver constants
 	private static final String RF_DRIVER = "br.unb.unbiquitous.ubiquitos.runFast.mid.RFInputDriver";
 	private static final String RF_INPUT_EVENT = "RFInputEvent";
 	
+	//Notifiers constants
 	private static final String NOTIFY_PERFORMED = "isPerformed";
 	private static final String NOTIFY_INPUT_CODE = "inputCode";
 	private static final String NOTIFY_DEVNAME = "deviceName";
@@ -36,6 +43,9 @@ public class InputManager implements UosEventListener, KeyListener{
 	private double intensity = 0.0;
 	
 	private static InputManager instance = null;
+	
+	//List of listeners
+	private List<InputListener> listeners = new ArrayList<InputListener>();
 	
 	public static InputManager GetInstance() {
 		if (instance == null) {
@@ -50,16 +60,25 @@ public class InputManager implements UosEventListener, KeyListener{
 		gateway = null;
 	}
 
-	private List<InputListener> listeners = new ArrayList<InputListener>();
-	
+	/**
+	 * Adds an input listener.
+	 * @param listener
+	 */
 	public synchronized void addInputListener(InputListener listener)  {
 		listeners.add(listener);
 	}
+	/**
+	 * Removes an input listener.
+	 * @param listener
+	 */
 	public synchronized void removeInputListener(InputListener listener)   {
 		listeners.remove(listener);
 	}
 	 
-	//Call this method to notify some inputListeners of the particular event
+	/**
+	 * Notifies the InputListeners that an input was performed.
+	 * @param device
+	 */
 	private synchronized void fireInputPerformed(UpDevice device) {
 		InputEvent event = new InputEvent(this, inputCode, device, intensity);
 		Iterator<InputListener> i = listeners.iterator();
@@ -68,7 +87,10 @@ public class InputManager implements UosEventListener, KeyListener{
 		}
 	}
 
-	//Call this method to notify some inputListeners of the particular event
+	/**
+	 * Notifies the InputListeners that an input was released.
+	 * @param device
+	 */
 	private synchronized void fireInputReleased(UpDevice device) {
 		InputEvent event = new InputEvent(this, inputCode, device, intensity);
 		Iterator<InputListener> i = listeners.iterator();
@@ -261,6 +283,11 @@ public class InputManager implements UosEventListener, KeyListener{
 
 	public void keyTyped(KeyEvent e) {}
 
+	/**
+	 * Registers itself in a device InputDriver to receive its events.
+	 * @param gateway
+	 * @param device
+	 */
 	public void registerDriver(Gateway gateway,UpDevice device){
 		if(this.gateway == null)
 			this.gateway = gateway;
@@ -273,6 +300,10 @@ public class InputManager implements UosEventListener, KeyListener{
 		}
 	}
 	
+	/**
+	 * Handles the events received by the InputDrivers registered in.
+	 * Adapting the needed ones and notifying it to the InputListeners.
+	 */
 	public void handleEvent(Notify notify) {//ADDED CASTERS
 		//System.out.println("RUNFAST!" +
 		//		"\n handleEvent: NOTIFY_INPUT_CODE  "+notify.getParameter(NOTIFY_INPUT_CODE)+

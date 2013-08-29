@@ -13,12 +13,17 @@ import javax.swing.ImageIcon;
 
 import br.unb.unbiquitous.ubiquitos.runFast.devicesControl.DevicesController;
 import br.unb.unbiquitous.ubiquitos.runFast.devicesControl.DevicesEvent;
+import br.unb.unbiquitous.ubiquitos.runFast.game.SoundEffect;
 import br.unb.unbiquitous.ubiquitos.runFast.game.Team;
 import br.unb.unbiquitous.ubiquitos.runFast.inputs.InputEvent;
 import br.unb.unbiquitous.ubiquitos.runFast.inputs.InputListener;
 import br.unb.unbiquitous.ubiquitos.runFast.inputs.InputManager;
 import br.unb.unbiquitous.ubiquitos.runFast.ui.Window;
 
+/**
+ * State which it is shown the race results.
+ *
+ */
 public class StateWin extends State implements InputListener{
 
 	/**
@@ -26,8 +31,8 @@ public class StateWin extends State implements InputListener{
 	 */
 	private static final long serialVersionUID = 6666341412704905058L;
 
-	private static final String WIN_IMAGE = "../images/image_win.jpg";
-	private static final String MEDAL_IMAGE = "../images/medals/medal";
+	private static final String WIN_IMAGE = "images/image_win.jpg";
+	private static final String MEDAL_IMAGE = "images/medals/medal";
 	
 	private static final int OPT_RESTART = 0;
 	private static final int OPT_MENU = 1;
@@ -99,12 +104,12 @@ public class StateWin extends State implements InputListener{
 	public void load(DevicesController devController) {
 		super.load(devController);
 		
-		ImageIcon ii = new ImageIcon(getClass().getResource(WIN_IMAGE));
+		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource(WIN_IMAGE));
         this.background = ii.getImage();
         
         medals = new Image[4];
         for(int i=1; i<5; ++i){
-        	ii = new ImageIcon(getClass().getResource(MEDAL_IMAGE+i+".png"));
+        	ii = new ImageIcon(getClass().getClassLoader().getResource(MEDAL_IMAGE+i+".png"));
         	medals[i-1] = ii.getImage();
         }       
         
@@ -152,6 +157,10 @@ public class StateWin extends State implements InputListener{
         g.dispose();
 	}
 	
+	/**
+	 * Draws each car in its position and with the relative information.
+	 * @param g
+	 */
 	private void printRankedCars(Graphics2D g){
 		Graphics2D g2d = (Graphics2D)g.create();
 		
@@ -280,6 +289,8 @@ public class StateWin extends State implements InputListener{
 				nextState = StateManager.STATE_MENU;
 			else if(selectedOption == OPT_QUIT)
 				nextState = StateManager.STATE_QUIT;
+			
+			SoundEffect.PICK.play();
 			break;
 		case InputEvent.IC_ACTION:
 			if(selectedOption == OPT_RESTART)
@@ -288,16 +299,22 @@ public class StateWin extends State implements InputListener{
 				nextState = StateManager.STATE_MENU;
 			else if(selectedOption == OPT_QUIT)
 				nextState = StateManager.STATE_QUIT;
+			
+			SoundEffect.PICK.play();
 			break;
 		case InputEvent.IC_UP:
 			--selectedOption;
 			if(selectedOption<0)
 				selectedOption = 2;
+			
+			SoundEffect.CHANGE.play();
 			break;
 		case InputEvent.IC_DOWN:
 			++selectedOption;
 			if(selectedOption>2)
 				selectedOption = 0;
+			
+			SoundEffect.CHANGE.play();
 			break;
 		default:
 			System.out.println("StateMenu - inputPerformed: default "+e.getInputCode());

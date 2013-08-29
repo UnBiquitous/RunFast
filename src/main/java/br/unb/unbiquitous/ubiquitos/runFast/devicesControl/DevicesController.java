@@ -8,27 +8,34 @@ import java.util.Map;
 
 import org.unbiquitous.uos.core.adaptabitilyEngine.Gateway;
 import org.unbiquitous.uos.core.adaptabitilyEngine.ServiceCallException;
-import org.unbiquitous.uos.core.driverManager.DriverData;
 import org.unbiquitous.uos.core.messageEngine.dataType.UpDevice;
 
 import br.unb.unbiquitous.ubiquitos.runFast.game.CarTemplate;
 import br.unb.unbiquitous.ubiquitos.runFast.game.Team;
 import br.unb.unbiquitous.ubiquitos.runFast.inputs.InputManager;
 
+/**
+ * Used to verify the input and output of devices, to manipulate
+ * the teams creation and to provide some entering and ending game procedures. 
+ *
+ */
 public class DevicesController{
 
+	//String used to identify the cell phone driver:
 	public static final String RF_INPUT_DRIVER = "br.unb.unbiquitous.ubiquitos.runFast.mid.RFInputDriver";
 	
-	private Gateway gateway;
+	private Gateway gateway;//keeps the uOS gateway
 	
-	private List<Team> teams;
-	private List<UpDevice> gameDevices,allDevices;
+	private List<Team> teams;//keeps the game teams
+	private List<UpDevice> gameDevices, allDevices;//saves the game devices and all the devices found in the previous search
 	
+	//listeners that will listen to the input and output of devices in the game:
 	private List<DevicesListener> listeners = new ArrayList<DevicesListener>();
 	
 	/**
 	 * Cheat Constructor: gets the gateway
-	 * and starts teams and devices with the keysListeners.
+	 * and starts two teams with three devices which uses the keysListeners.
+	 * device1 pilot of team1; device2 copilot of team1; device3 pilot of team2;
 	 * */
 	public DevicesController(Gateway gateway, boolean cheats) {
 		this.gateway = gateway;
@@ -36,13 +43,15 @@ public class DevicesController{
 		gameDevices = new ArrayList<UpDevice>();
 		allDevices = new ArrayList<UpDevice>();
 		
-		gameDevices.add(InputManager.DEVICE_1);
-		//gameDevices.add(InputManager.DEVICE_2);
-		//gameDevices.add(InputManager.DEVICE_3);
+		if(cheats){
+			gameDevices.add(InputManager.DEVICE_1);
+			gameDevices.add(InputManager.DEVICE_2);
+			gameDevices.add(InputManager.DEVICE_3);
 		
-		teams.add(new Team(InputManager.DEVICE_1));
-		//teams.get(0).setCopilot(InputManager.DEVICE_2);
-		//teams.add(new Team(InputManager.DEVICE_3));
+			teams.add(new Team(InputManager.DEVICE_1));
+			teams.get(0).setCopilot(InputManager.DEVICE_2);
+			teams.add(new Team(InputManager.DEVICE_3));
+		}
 	}
 	
 	/**
@@ -57,14 +66,16 @@ public class DevicesController{
 	}
 	
 	/**
-	 * Initiate RFDevicesController with this DeviceController;
+	 * Loops until it finds the RFDevicesDriver driver that must be initiated
+	 * by the uOS. Then initiates the driver with this instance of DeviceController
+	 * so that the driver may be able to get game information.
 	 */
 	public void startDevicesController(){
 		String deviceName = gateway.getCurrentDevice().getName();
 
-		boolean test = false;
+		boolean found = false;
 		int i;
-		while(!test){
+		while(!found){
 			for(i=0;i<gateway.listDrivers(RFDevicesDriver.RFDEVICES_DRIVER).size();++i) {
 				if(gateway.listDrivers(RFDevicesDriver.RFDEVICES_DRIVER).
 						get(i).getDevice().getName().equals(deviceName)){
@@ -73,7 +84,7 @@ public class DevicesController{
 						map.put("devicesController", this);
 						gateway.callService(gateway.getCurrentDevice(), "setDeviceController",RFDevicesDriver.RFDEVICES_DRIVER,
 								null, null,map);
-						test = true;
+						found = true;
 					} catch (ServiceCallException e) {
 						e.printStackTrace();
 					}
@@ -83,15 +94,25 @@ public class DevicesController{
 		
 	}
 	
-	
+	/**
+	 * Adds one new listener to the listeners list.
+	 * @param listener
+	 */
 	public synchronized void addDevicesListener(DevicesListener listener)  {
 		listeners.add(listener);
 	}
+	/**
+	 * Removes one existing listener from the listeners list.
+	 * @param listener
+	 */
 	public synchronized void removeDevicesListener(DevicesListener listener)   {
 		listeners.remove(listener);
 	}
 	 
-	//Call this method to notify some inputListeners of the particular event
+	/**
+	 * Notifies the listeners that the a new device entered the game.
+	 * @param device
+	 */
 	private synchronized void fireDeviceEntered(UpDevice device) {
 		DevicesEvent event = new DevicesEvent(this, device);
 		Iterator<DevicesListener> i = listeners.iterator();
@@ -100,7 +121,10 @@ public class DevicesController{
 		}
 	}
 
-	//Call this method to notify some inputListeners of the particular event
+	/**
+	 * Notifies the listeners that the a device got out of the game.
+	 * @param device
+	 */
 	private synchronized void fireDeviceGotOut(UpDevice device) {
 		DevicesEvent event = new DevicesEvent(this, device);
 		Iterator<DevicesListener> i = listeners.iterator();
@@ -109,6 +133,11 @@ public class DevicesController{
 		}
 	}
 	
+	/**
+	 * Updates the devices references by getting all the RFInputDrivers and
+	 * verifying if any device got in or out and takes the necessary actions.
+	 * @param dt
+	 */
 	public void update(int dt){
 		List<UpDevice> devices = new ArrayList<UpDevice>();
 		if(gateway.listDrivers(RF_INPUT_DRIVER)!=null)
@@ -156,19 +185,21 @@ public class DevicesController{
 		//if(!allDevices.equals(devices)){
 		boolean found = false;
 		
+		//Runs through the list of devices and compares to the existing ones
 		for(int i=0;i<devices.size();++i){
 			found = false;
 			for(int j=0;j<allDevices.size();++j){
 				if(devices.get(i).getName().equals(allDevices.get(j).getName()))
 					found = true;;
 			}
+			//If it doesn't find the device it must be because it is new in the environment
 			if(!found){
-				List<DriverData> drivers = gateway.listDrivers(RF_INPUT_DRIVER);
-				for(int k=0;k<drivers.size();++k){
-					if(drivers.get(k).getDevice().getName().equals(devices.get(i).getName()))
-						found = true;
-				}
-				if(found){
+				//List<DriverData> drivers = gateway.listDrivers(RF_INPUT_DRIVER);
+				//for(int k=0;k<drivers.size();++k){
+				//	if(drivers.get(k).getDevice().getName().equals(devices.get(i).getName()))
+				//		found = true;
+				//}
+				//if(found){
 					try {
 						Map<String, Object> map = new HashMap<String, Object>();
 						map.put("deviceName", gateway.getCurrentDevice().getName());
@@ -176,7 +207,7 @@ public class DevicesController{
 					} catch (ServiceCallException e) {
 						e.printStackTrace();
 					}
-				}
+				//}
 			}
 		}
 			

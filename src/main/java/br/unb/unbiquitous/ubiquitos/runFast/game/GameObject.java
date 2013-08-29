@@ -5,6 +5,11 @@ import java.awt.Rectangle;
 
 import javax.swing.JPanel;
 
+/**
+ * Abstracts the game objects, providing abstract methods to make
+ * the update and rendering of the object and also bounds treatment. 
+ *
+ */
 public abstract class GameObject {
 	
 	protected Rectangle box;
@@ -27,18 +32,33 @@ public abstract class GameObject {
     	return box.intersects(other.getBounds());
     }
     
+    /**
+     * @return the x
+     */
     public int getX() {
     	return box.x;
     }
+    /**
+     * @return the y
+     */
     public int getY() {
     	return box.y;
     }
+    /**
+     * @return the width
+     */
     public int getWidth() {
     	return box.width;
     }
+    /**
+     * @return the height
+     */
     public int getHeight() {
     	return box.height;
     }
+    /**
+     * @return the GameObject rectangle bounds
+     */
     public Rectangle getBounds() {
         return box;
     }

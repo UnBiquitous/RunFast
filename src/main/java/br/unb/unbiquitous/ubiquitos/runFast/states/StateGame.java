@@ -10,6 +10,10 @@ import br.unb.unbiquitous.ubiquitos.runFast.devicesControl.DevicesEvent;
 import br.unb.unbiquitous.ubiquitos.runFast.game.Map;
 import br.unb.unbiquitous.ubiquitos.runFast.ui.Window;
 
+/**
+ * State where the game actually runs.
+ *
+ */
 public class StateGame extends State{
 
 	/**
@@ -64,6 +68,9 @@ public class StateGame extends State{
 		repaint();
 	}
 	
+	/**
+	 * Paints the frame picture.
+	 */
 	public void paint(Graphics g) {
         super.paint(g);
         
@@ -77,11 +84,16 @@ public class StateGame extends State{
         g.dispose();
 	}
 
-	
+	/**
+	 * Updates the devices references when a new device enters.
+	 */
 	public void deviceEntered(DevicesEvent e) {
 		map.updateTeams();
 	}
 
+	/**
+	 * Updates the devices references when a device get out.
+	 */
 	public void deviceGotOut(DevicesEvent e) {
 		map.updateTeams();
 	}

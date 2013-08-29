@@ -16,15 +16,22 @@ import org.unbiquitous.uos.core.messageEngine.dataType.UpDevice;
 
 import br.unb.unbiquitous.ubiquitos.runFast.devicesControl.DevicesController;
 
+/**
+ * Items that appears randomly in the map and can be collected.
+ *
+ */
 public class Item extends GameObject{
 
-	private static final String GENERAL_PATH = "../images/items/";
-	
+	//Items paths
+	private static final String GENERAL_PATH = "images/items/";
+
 	private static final String BOX_PATH = GENERAL_PATH+"box.png";
 	private static final String BONUS_PATH = GENERAL_PATH+"bonus.png";
 	private static final String BREAK_PATH = GENERAL_PATH+"break.png";
 	private static final String UNEQUIP_PATH = GENERAL_PATH+"unequip.png";
+	private static final String TRAP_PATH = GENERAL_PATH+"oil.png";
 	
+	//Types identifiers
 	private static final int NUMBER_OF_ITEM_TYPES = 4;
 	private static final int ITEM_TYPE_TRAP = 0;
 	private static final int ITEM_TYPE_BONUS = 1;
@@ -38,7 +45,7 @@ public class Item extends GameObject{
 	public Item(int x, int y) {
 		super(x, y, 0, 0);
 		
-		ImageIcon ii = new ImageIcon(getClass().getResource(BOX_PATH));
+		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource(BOX_PATH));
 		boxImage = ii.getImage();
 		box.width = boxImage.getWidth(null);
 		box.height = boxImage.getHeight(null);
@@ -46,6 +53,9 @@ public class Item extends GameObject{
 		initItem();
 	}
 	
+	/**
+	 * Generates an item type and initiates it based in this type.
+	 */
 	private void initItem() {
 		
 		Random gerador = new Random();
@@ -56,19 +66,19 @@ public class Item extends GameObject{
 		//itemType = 2;
 		switch(itemType) {
 			case ITEM_TYPE_TRAP:
-				ii = new ImageIcon(getClass().getResource(Trap.OIL_PATH));
+				ii = new ImageIcon(getClass().getClassLoader().getResource(TRAP_PATH));
 				break;
 			case ITEM_TYPE_BONUS:
-				ii = new ImageIcon(getClass().getResource(BONUS_PATH));
+				ii = new ImageIcon(getClass().getClassLoader().getResource(BONUS_PATH));
 				break;
 			case ITEM_TYPE_BREAK:
-				ii = new ImageIcon(getClass().getResource(BREAK_PATH));
+				ii = new ImageIcon(getClass().getClassLoader().getResource(BREAK_PATH));
 				break;
 			case ITEM_TYPE_UNEQUIP:
-				ii = new ImageIcon(getClass().getResource(UNEQUIP_PATH));
+				ii = new ImageIcon(getClass().getClassLoader().getResource(UNEQUIP_PATH));
 				break;
 			default:
-				//ii = new ImageIcon(getClass().getResource(OIL_PATH));
+				//ii = new ImageIcon(getClass().getClassLoader().getResource(OIL_PATH));
 				break;
 		}
 		itemImage = ii.getImage();
@@ -79,6 +89,9 @@ public class Item extends GameObject{
 		return 0;
 	}
 
+	/**
+	 * Renders the item.
+	 */
 	@Override
 	public void render(Graphics2D g, int cameraX, int cameraY, JPanel panel) {
 		Graphics2D gItem = (Graphics2D) g.create();
@@ -86,6 +99,11 @@ public class Item extends GameObject{
 		gItem.dispose();
 	}
 	
+	/**
+	 * Activates the item.
+	 * @param car
+	 * @return
+	 */
 	public boolean activate(Car car) {
 		boolean needSelection = false;
 		
@@ -110,6 +128,7 @@ public class Item extends GameObject{
 					map.put("deviceName", gateway.getCurrentDevice().getName());
 					Map.getInstance().getDevicesController();
 					
+					//Filters the devices that will receive the minigame, once it changes based in the team composition
 					List<UpDevice> devices = new ArrayList<UpDevice>();
 					if(Map.getInstance().getTeam(option).getNumberOfPlayers()>2){
 						if(Map.getInstance().getTeam(option).getAssistants().size()>0)
@@ -123,6 +142,7 @@ public class Item extends GameObject{
 						if(Map.getInstance().getTeam(option).getPilot()!=null)
 							devices.add(Map.getInstance().getTeam(option).getPilot());
 					}
+					//Starts the bonus minigame in all the filtered devices.
 					for(int k=0; k<devices.size(); ++k)
 						gateway.callService(devices.get(k), "beginMGBonus",
 								DevicesController.RF_INPUT_DRIVER, null, null, map);
@@ -145,6 +165,10 @@ public class Item extends GameObject{
 		return needSelection;
 	}
 	
+	/**
+	 * If it is an item which needs a target it is reactivated.
+	 * @param option
+	 */
 	public void reactivate(int option) {
 		Gateway gateway = Map.getInstance().getDevicesController().getGateway();
 		
@@ -162,7 +186,7 @@ public class Item extends GameObject{
 				}
 				///*
 				try {
-					File fileJar = new File(getClass().getResource("../minis/bonusminigame.jar").toURI());
+					File fileJar = new File(getClass().getClassLoader().getResource("minis/bonusminigame.jar").toURI());
 					ClassToolbox box = new ClassToolbox();
                     ClassLoader loader = box.load(new FileInputStream(fileJar));
                    
@@ -170,8 +194,8 @@ public class Item extends GameObject{
                     Serializable agent = (Serializable)clazz.newInstance();
 
                     File file;
-					file = new File(getClass().getResource("../minis/bonusminigame.apk").toURI());
-					System.out.println("../minis/bonusminigame.apk is "+file.exists());
+					file = new File(getClass().getClassLoader().getResource("minis/bonusminigame.apk").toURI());
+					System.out.println("minis/bonusminigame.apk is "+file.exists());
                     //ItemAgent agent = new ItemAgent();
 					//agent.init(Map.getInstance().getDevicesController().getGateway());
 					AgentUtil.getInstance().move(agent, file, Map.getInstance().getTeam(option).getAssistants().get(0),
@@ -187,20 +211,24 @@ public class Item extends GameObject{
 					map.put("deviceName", gateway.getCurrentDevice().getName());
 					map.put("helpNumber", ""+Map.getInstance().getTeam(option).getNumberOfPlayers());
 					
+					//Filters the devices that will receive the minigame, once it changes based in the team composition
 					List<UpDevice> devices = new ArrayList<UpDevice>();
+					
+					Team team = Map.getInstance().getTeam(option);
 					if(Map.getInstance().getTeam(option).getNumberOfPlayers()>1){
-						if(Map.getInstance().getTeam(option).getAssistants().size()>0)
-							devices = Map.getInstance().getTeam(option).getAssistants();
-						if(Map.getInstance().getTeam(option).getCopilot()!=null)
-							devices.add(Map.getInstance().getTeam(option).getCopilot());
-					}else if(Map.getInstance().getTeam(option).getNumberOfPlayers()==1){
-						if(Map.getInstance().getTeam(option).getPilot()!=null)
-							devices.add(Map.getInstance().getTeam(option).getPilot());
-						if(Map.getInstance().getTeam(option).getCopilot()!=null)
-							devices.add(Map.getInstance().getTeam(option).getCopilot());
-						if(Map.getInstance().getTeam(option).getAssistants().size()>0)
-							devices.add(Map.getInstance().getTeam(option).getAssistants().get(0));
+						if(team.getAssistants().size()>0)
+							devices = team.getAssistants();
+						if(team.getCopilot()!=null)
+							devices.add(team.getCopilot());
+					}else if(team.getNumberOfPlayers()==1){
+						if(team.getPilot()!=null)
+							devices.add(team.getPilot());
+						if(team.getCopilot()!=null)
+							devices.add(team.getCopilot());
+						if(team.getAssistants().size()>0)
+							devices.add(team.getAssistants().get(0));
 					}
+					//Starts the break minigame in all the filtered devices
 					for(int k=0; k<devices.size(); ++k)
 						gateway.callService(devices.get(k), "beginMGBreak",
 								DevicesController.RF_INPUT_DRIVER, null, null, map);

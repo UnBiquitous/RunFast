@@ -10,27 +10,46 @@ import java.awt.Toolkit;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
+/**
+ * Shows some car information.
+ *
+ */
 public class CarShower extends GameObject{
 
+	//Font constants
 	private static final String FONT       = "Helvetica";
 	private static final int    FONT_STYLE = Font.BOLD;
 	private static final int    FONT_SIZE  = 14;
 	
+	//String constants
 	private static final String TXT_TEAM    = "Time ";
 	private static final String TXT_SPEED   = "Velocidade: ";
-	private static final String TXT_FUEL    = "Combustível: ";
+	//private static final String TXT_FUEL    = "Combustível: ";
 	private static final String TXT_TRACKS  = "Voltas: ";
 	private static final String TXT_POWER   = "Força: ";
 	private static final String TXT_DEFENSE = "Defesa: ";
 	private static final String TXT_LIFE    = "Dano: ";
 	private static final String TXT_MONEY   = "Dinheiro: ";
+	
+	//Equips paths
+	private static final String EQUIP_GUN_IMAGE = "images/equips/gun.png";
+	private static final String EQUIP_TANK_IMAGE = "images/equips/tank.png";
+	private static final String EQUIP_WHEEL_IMAGE = "images/equips/wheel.png";
 
+	//Correspondent car information
 	private String teamName;
 	private Car car;
 	private Team team;
 	
+	//Equip images
 	private Image equipPowerImage, equipDefenseImage, equipSpeedImage;
 	
+	/**
+	 * Receives the initial position in the screen and the related team it will represents.
+	 * @param x
+	 * @param y
+	 * @param team
+	 */
 	public CarShower(int x, int y, Team team) {
 		super(x, y, 0, 0);
 		
@@ -38,11 +57,11 @@ public class CarShower extends GameObject{
 		this.car = team.getCar();
 		teamName = " "+(team.getThisTeamNumber()+1);
 		
-		ImageIcon ii = new ImageIcon(getClass().getResource("../images/equips/gun.png"));
+		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource(EQUIP_GUN_IMAGE));
 		equipPowerImage = ii.getImage();
-		ii = new ImageIcon(getClass().getResource("../images/equips/tank.png"));
+		ii = new ImageIcon(getClass().getClassLoader().getResource(EQUIP_TANK_IMAGE));
 		equipDefenseImage = ii.getImage();
-		ii = new ImageIcon(getClass().getResource("../images/equips/wheel.png"));
+		ii = new ImageIcon(getClass().getClassLoader().getResource(EQUIP_WHEEL_IMAGE));
 		equipSpeedImage = ii.getImage();
 	}
 
@@ -51,16 +70,22 @@ public class CarShower extends GameObject{
 		return 0;
 	}
 
+	/**
+	 * Renders all the informations
+	 */
 	@Override
 	public void render(Graphics2D g, int cameraX, int cameraY, JPanel panel) {
 		Graphics2D gShower = (Graphics2D) g.create();
 		
+		//Define fonts
 		Font font = new Font(FONT, FONT_STYLE, FONT_SIZE);
         FontMetrics metr = panel.getFontMetrics(font);
 
+        //Define colors
         gShower.setColor(Color.WHITE);
         gShower.setFont(font);
 
+        //Draws the attributes
         gShower.drawString(TXT_TEAM   +teamName         , box.x+cameraX, box.y+cameraY +(metr.getHeight()+5)*2);
         gShower.drawString(TXT_SPEED  +car.getSpeed()   , box.x+cameraX, box.y+cameraY +(metr.getHeight()+5)*3);
         //gShower.drawString(TXT_FUEL   +car.getFuel()    , box.x+cameraX, box.y+cameraY +(metr.getHeight()+5)*3);
@@ -70,6 +95,7 @@ public class CarShower extends GameObject{
         gShower.drawString(TXT_LIFE   +car.getLife()    , box.x+cameraX, box.y+cameraY +(metr.getHeight()+5)*7);
         gShower.drawString(TXT_MONEY  +car.getMoney()   , box.x+cameraX, box.y+cameraY +(metr.getHeight()+5)*8);
 
+        //Draw the car equips information
         gShower.drawImage(equipPowerImage, box.x+cameraX,box.y+cameraY +(metr.getHeight()+5)*9, panel);
         gShower.drawString("x"+car.getEquipPower(),
         		box.x+cameraX+equipPowerImage.getWidth(null),
@@ -83,6 +109,7 @@ public class CarShower extends GameObject{
         		box.x+cameraX+equipSpeedImage.getWidth(null)+80,
         		box.y+cameraY +(metr.getHeight()+5)*9);
         
+        //Draws the item information
         if(car.getItemImage()!=null) {
         	gShower.fillRect(box.x+cameraX+5,
         			box.y+cameraY +(metr.getHeight()+5)*9+equipDefenseImage.getHeight(null)+5, 35, 35);
@@ -92,6 +119,7 @@ public class CarShower extends GameObject{
         	gShower.drawRect(box.x+cameraX+5,
         			box.y+cameraY +(metr.getHeight()+5)*9+equipDefenseImage.getHeight(null)+5, 35, 35);
         
+        //Draws the item target chooser
         if(car.isEnableOption()) {
         	for(int i = 0; i<Map.getInstance().getNumberOfTeams(); ++i) {
         		gShower.drawString(""+(i+1),box.x+cameraX+5+i*15,

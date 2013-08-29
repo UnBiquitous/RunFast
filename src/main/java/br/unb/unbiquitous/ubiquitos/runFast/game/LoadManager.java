@@ -4,9 +4,14 @@ import java.awt.Image;
 
 import javax.swing.ImageIcon;
 
+/**
+ * Loads some used images.
+ *
+ */
 public class LoadManager {
 
-	private static final String EXPLOSION_PATH = "../images/cars/explosion/explosion";
+	//Paths
+	private static final String EXPLOSION_PATH = "images/cars/explosion/explosion";
 	private static final String GENERAL_FORMAT = ".png";
 	
 	private static Image[] explosion = null;
@@ -16,10 +21,13 @@ public class LoadManager {
 			loadExplosion();
 	}
 	
+	/**
+	 * Loads the explosion images
+	 */
 	private void loadExplosion(){
 		explosion = new Image[15];
 		for(int i=0; i<15; ++i){
-			ImageIcon ii = new ImageIcon(getClass().getResource(EXPLOSION_PATH+(i+1)+GENERAL_FORMAT));
+			ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource(EXPLOSION_PATH+(i+1)+GENERAL_FORMAT));
 			explosion[i] = ii.getImage();
 		}
 	}

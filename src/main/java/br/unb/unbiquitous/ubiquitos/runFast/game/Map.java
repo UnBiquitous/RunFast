@@ -21,16 +21,25 @@ import br.unb.unbiquitous.ubiquitos.runFast.states.Stack;
 import br.unb.unbiquitous.ubiquitos.runFast.states.StateManager;
 import br.unb.unbiquitous.ubiquitos.runFast.ui.Window;
 
+/**
+ * Map where the game happens, keeps basically all the game objects shown during the game
+ * and makes their manipulation besides of verifying the objects collision.
+ *
+ */
 public class Map extends GameObject{
 
+	//Map bounds damage
 	private static final int MAP_DAMAGE = 5;
 
+	//Max number of equips and items shown in the map
 	private static final int MAX_ITEMS = 2;
 	private static final int MAX_EQUIPS = 3;
 	
-	private static final String MAP_IMAGE_PATH = "../images/game/map.jpg";
+	//Map image path
+	private static final String MAP_IMAGE_PATH = "images/game/map.jpg";
 
-	private static final int MAP_TIME = 120000;
+	//Race time
+	private static final int MAP_TIME = 180000;
 	private static final int MAP_TEAM_INCREASE_TIME = 10000;
 	
 	private DevicesController devicesController;
@@ -41,6 +50,7 @@ public class Map extends GameObject{
 	
 	private int time;
 	
+	//Game objects:
 	private List<Team> teams;
 	private List<CarShower> teamsShowers;
 	private List<Equip> equips;
@@ -82,7 +92,7 @@ public class Map extends GameObject{
 		box.x = x;
 		box.y = y;
 		
-		ImageIcon ii = new ImageIcon(getClass().getResource(MAP_IMAGE_PATH));
+		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource(MAP_IMAGE_PATH));
         this.background = ii.getImage();
         
         box.width = background.getWidth(null);
@@ -96,6 +106,11 @@ public class Map extends GameObject{
         initFromStack(devController, stack);
 	}
 	
+	/**
+	 * Initiates the teams from the stack
+	 * @param devController
+	 * @param stack
+	 */
 	private void initFromStack(DevicesController devController, Stack stack) {
 		teams = devController.getTeams();
 		teamsShowers = new ArrayList<CarShower>();
@@ -122,19 +137,26 @@ public class Map extends GameObject{
 		}
 	}
 	
+	/**
+	 * Unload the map
+	 * @return
+	 */
 	public Stack unload() {
 		for(int i=0;i<teams.size();i++)
 			InputManager.GetInstance().removeInputListener(teams.get(i));
 		return new Stack();
 	}
 
+	
 	@Override
 	public int update(int dt) {
 		time -= dt;
 		
+		//Creates equips and items
 		generateEquips();
 		generateItems();
 		
+		//Verifies the game objects collisions
 		for(int i=0;i<teams.size();i++){
 			teams.get(i).update(dt);
 			if(teams.get(i).getCar()!=null)
@@ -148,6 +170,7 @@ public class Map extends GameObject{
 		verifyCarsTrapsCollisions();
 		verifyCarsLapsConclusion();
 		
+		//Updates game objects
 		for(int i=0;i<teamsShowers.size();i++)
 			teamsShowers.get(i).update(dt);
 		
@@ -160,6 +183,7 @@ public class Map extends GameObject{
 		for(int i=0;i<traps.size();i++)
 			traps.get(i).update(dt);
 		
+		//Verify if the game ended
 		return verifyGameTime();
 	}
 
@@ -206,6 +230,9 @@ public class Map extends GameObject{
 	}
 	
 	//Generators:
+	/**
+	 * Generates randomly equips around the map, respecting the equips limit.
+	 */
 	private void generateEquips(){
 		int chance = random.nextInt(200);
 		if((equips.size()<(MAX_EQUIPS*teams.size()))&&(chance == 1)){
@@ -226,6 +253,9 @@ public class Map extends GameObject{
 		}
 	}
 	
+	/**
+	 * Generates randomly items around the map, respecting the items limit.
+	 */
 	private void generateItems(){
 		int chance = random.nextInt(300);
 		if((items.size()<(MAX_ITEMS*teams.size()))&&(chance == 1)){
@@ -246,6 +276,9 @@ public class Map extends GameObject{
 		}
 	}
 	
+	/**
+	 * @return the next state based in the race time
+	 */
 	private int verifyGameTime(){
 		if(time < -500){
 			devicesController.endRace();
@@ -346,6 +379,9 @@ public class Map extends GameObject{
 		}
 	}
 	
+	/**
+	 * Verify collision between cars and equips
+	 */
 	private void verifyCarsEquipsCollisions() {
 		Car current;
 		for(int i=0;i<teams.size();i++) {
@@ -365,6 +401,9 @@ public class Map extends GameObject{
 		}
 	}
 	
+	/**
+	 * Verify collision between cars and items
+	 */
 	private void verifyCarsItemsCollisions() {
 		Car current;
 		for(int i=0;i<teams.size();i++) {
@@ -385,6 +424,9 @@ public class Map extends GameObject{
 		}
 	}
 	
+	/**
+	 * Verify collision between cars and traps
+	 */
 	private void verifyCarsTrapsCollisions() {
 		Car current;
 		for(int i=0;i<teams.size();i++) {
@@ -392,7 +434,7 @@ public class Map extends GameObject{
 			if(current!=null){
 				if(!current.isDead()){
 					for(int j=0;j<traps.size();j++) {
-						if(traps.get(j).isAvaible())
+						if(traps.get(j).isAvailable())
 							if(traps.get(j).collidesWith(current)) {
 								current.receiveTrap(traps.get(j));
 								traps.remove(j);
@@ -468,14 +510,25 @@ public class Map extends GameObject{
 		}
 	}
 	
+	/**
+	 * Adds one trap to the map
+	 * @param trap
+	 */
 	public void addTrap(Trap trap) {
 		traps.add(trap);
 	}
 	
+	/**
+	 * @return the teams.size
+	 */
 	public int getNumberOfTeams() {
 		return teams.size();
 	}
 	
+	/**
+	 * @param number
+	 * @return the correspondent team
+	 */
 	public Team getTeam(int number) {
 		if(number > (teams.size()-1) || (number < 0))
 			return null;

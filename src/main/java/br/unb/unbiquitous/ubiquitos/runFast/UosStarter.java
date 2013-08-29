@@ -4,7 +4,7 @@ import org.unbiquitous.uos.core.ContextException;
 import org.unbiquitous.uos.core.UOS;
 
 /**
- * main
+ * Starts the uOS. The uOS initiates using the ubiquitous.properties file.
  *
  */
 public class UosStarter {

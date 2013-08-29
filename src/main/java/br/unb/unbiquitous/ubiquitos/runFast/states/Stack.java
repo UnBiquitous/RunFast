@@ -6,6 +6,10 @@ import org.unbiquitous.uos.core.messageEngine.dataType.UpDevice;
 
 import br.unb.unbiquitous.ubiquitos.runFast.game.CarTemplate;
 
+/**
+ * Class used to pass information from one state to another.
+ *
+ */
 public class Stack {
 
 	public static final boolean STACK_EMPTY = true;
@@ -16,10 +20,19 @@ public class Stack {
 	private int length;
 	private CarTemplate cars[];
 	
+	/**
+	 * Initiates an empty stack.
+	 */
 	public Stack() {
 		empty = STACK_EMPTY;
 	}
-	
+
+	/**
+	 * Receives the pilots devices, chosen carTemplates and the number pilots.
+	 * @param devices
+	 * @param cars
+	 * @param length
+	 */
 	public Stack(List<UpDevice> devices, CarTemplate cars[], int length) {
 		empty = !STACK_EMPTY;
 		this.devices = devices;

@@ -12,6 +12,7 @@ import javax.swing.ImageIcon;
 
 import br.unb.unbiquitous.ubiquitos.runFast.devicesControl.DevicesController;
 import br.unb.unbiquitous.ubiquitos.runFast.devicesControl.DevicesEvent;
+import br.unb.unbiquitous.ubiquitos.runFast.game.SoundEffect;
 import br.unb.unbiquitous.ubiquitos.runFast.inputs.InputEvent;
 import br.unb.unbiquitous.ubiquitos.runFast.inputs.InputListener;
 import br.unb.unbiquitous.ubiquitos.runFast.inputs.InputManager;
@@ -24,11 +25,11 @@ public class StateMenu extends State implements InputListener{
 	 */
 	private static final long serialVersionUID = -2194386631573094489L;
 	
-	private static final String MENU_IMAGE = "../images/image_menu.jpg";
+	private static final String MENU_IMAGE = "images/image_menu.jpg";
 	
 	private static final int OPT_PLAY = 0;
-	private static final int OPT_CREDITS = 1;
-	private static final int OPT_QUIT = 2;
+	//private static final int OPT_CREDITS = 1;
+	private static final int OPT_QUIT = 1;//2;
 	
 	/*Specifications to the menu items display:*/
 	private static final String FONT = "Helvetica";
@@ -37,7 +38,7 @@ public class StateMenu extends State implements InputListener{
 	private static final int FONT_SELECTED_SIZE = 80;
 	
 	private static final String PLAY = "PLAY";
-	private static final String CREDITS = "CREDITS";
+	//private static final String CREDITS = "CREDITS";
 	private static final String QUIT = "QUIT";
 	
 	private Image background;
@@ -64,7 +65,7 @@ public class StateMenu extends State implements InputListener{
 	public void load(DevicesController devController) {
 		super.load(devController);
 		
-		ImageIcon ii = new ImageIcon(getClass().getResource(MENU_IMAGE));
+		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource(MENU_IMAGE));
         this.background = ii.getImage();
 	}
 
@@ -106,20 +107,22 @@ public class StateMenu extends State implements InputListener{
         FontMetrics selectedMetr = this.getFontMetrics(selectedFont);
         
         if(selectedOption==OPT_PLAY){
-        	printItemSelected(g, PLAY, B_HEIGHT/2 - metr.getHeight()*2);
-        	printItem(g, CREDITS, B_HEIGHT/2 - metr.getHeight());
+        	//printItemSelected(g, PLAY, B_HEIGHT/2 - metr.getHeight()*2);
+        	//printItem(g, CREDITS, B_HEIGHT/2 - metr.getHeight());
+        	printItemSelected(g, PLAY, B_HEIGHT/2 - metr.getHeight());
         	printItem(g, QUIT, B_HEIGHT/2);
         	
-        }else if(selectedOption==OPT_CREDITS){
+        /*}else if(selectedOption==OPT_CREDITS){
         	printItem(g, PLAY,
         			B_HEIGHT/2 - metr.getHeight() - selectedMetr.getHeight());
         	printItemSelected(g, CREDITS, B_HEIGHT/2 - metr.getHeight());
         	printItem(g, QUIT, B_HEIGHT/2);
-        
+        */
         }else if(selectedOption==OPT_QUIT){
-        	printItem(g, PLAY,
-        			B_HEIGHT/2 - metr.getHeight() - selectedMetr.getHeight());
-        	printItem(g, CREDITS, B_HEIGHT/2 - selectedMetr.getHeight());
+        	//printItem(g, PLAY,
+        	//		B_HEIGHT/2 - metr.getHeight() - selectedMetr.getHeight());
+        	//printItem(g, CREDITS, B_HEIGHT/2 - selectedMetr.getHeight());
+        	printItem(g, PLAY, B_HEIGHT/2 - selectedMetr.getHeight());
         	printItemSelected(g, QUIT, B_HEIGHT/2);
         };
                 
@@ -162,22 +165,30 @@ public class StateMenu extends State implements InputListener{
 					nextState = StateManager.STATE_SELECTION;
 				else if(selectedOption == OPT_QUIT)
 					nextState = StateManager.STATE_QUIT;
+				
+				SoundEffect.PICK.play();
 				break;
 			case InputEvent.IC_ACTION:
 				if(selectedOption == OPT_PLAY)
 					nextState = StateManager.STATE_SELECTION;
 				else if(selectedOption == OPT_QUIT)
 					nextState = StateManager.STATE_QUIT;
+				
+				SoundEffect.PICK.play();
 				break;
 			case InputEvent.IC_UP:
 				--selectedOption;
 				if(selectedOption<0)
-					selectedOption = 2;
+					selectedOption = 1;//2;
+				
+				SoundEffect.CHANGE.play();
 				break;
 			case InputEvent.IC_DOWN:
 				++selectedOption;
-				if(selectedOption>2)
+				if(selectedOption>1)//2)
 					selectedOption = 0;
+				
+				SoundEffect.CHANGE.play();
 				break;
 			default:
 				System.out.println("StateMenu - inputPerformed: default "+e.getInputCode());

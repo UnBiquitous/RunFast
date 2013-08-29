@@ -4,6 +4,10 @@ import java.util.EventObject;
 
 import org.unbiquitous.uos.core.messageEngine.dataType.UpDevice;
 
+/**
+ * Class used to pass the game input events. 
+ *
+ */
 public class InputEvent extends EventObject {
 
 	/**
@@ -11,6 +15,7 @@ public class InputEvent extends EventObject {
 	 */
 	private static final long serialVersionUID = 3864120084930711205L;
 	
+	//Inputs constants identifiers 
 	public static final int IC_ENTER       = 0x00;
 	public static final int IC_UP          = 0x01;
 	public static final int IC_DOWN        = 0x02;
@@ -22,9 +27,11 @@ public class InputEvent extends EventObject {
 	public static final int IC_PLUS_LEFT   = 0x11;
 	public static final int IC_PLUS_RIGHT  = 0x12;
 	
+	//Intensity constants
 	public static final int IC_WITH_INTENSITY = 0x20;
 	public static final int IC_SPIN           = 0x21;
 	
+	//Input information
 	private int inputCode;
 	private double intensity;
 	private UpDevice device;

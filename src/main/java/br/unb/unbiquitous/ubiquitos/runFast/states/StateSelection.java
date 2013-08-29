@@ -18,12 +18,17 @@ import org.unbiquitous.uos.core.messageEngine.dataType.UpDevice;
 import br.unb.unbiquitous.ubiquitos.runFast.devicesControl.DevicesController;
 import br.unb.unbiquitous.ubiquitos.runFast.devicesControl.DevicesEvent;
 import br.unb.unbiquitous.ubiquitos.runFast.game.CarTemplate;
+import br.unb.unbiquitous.ubiquitos.runFast.game.SoundEffect;
 import br.unb.unbiquitous.ubiquitos.runFast.game.Team;
 import br.unb.unbiquitous.ubiquitos.runFast.inputs.InputEvent;
 import br.unb.unbiquitous.ubiquitos.runFast.inputs.InputListener;
 import br.unb.unbiquitous.ubiquitos.runFast.inputs.InputManager;
 import br.unb.unbiquitous.ubiquitos.runFast.ui.Window;
 
+/**
+ * State used by the pilots to choose a car.
+ *
+ */
 public class StateSelection extends State implements InputListener{
 
 	/**
@@ -36,18 +41,23 @@ public class StateSelection extends State implements InputListener{
 	private static final int FONT_STYLE = Font.BOLD;
 	private static final int FONT_SIZE = 14;
 	
-	private static final String MENU_IMAGE_PATH = "../images/image_menu.jpg";
+	//Menu image path
+	private static final String MENU_IMAGE_PATH = "images/image_menu.jpg";
 	
+	//Shown menu strings
 	private static final String MSG_SPEED        = "Velocidade";
 	private static final String MSG_ACCELERATION = "Aceleração";
 	private static final String MSG_TURN         = "Curva";
 	private static final String MSG_POWER        = "Ataque";
 	private static final String MSG_DEFENSE      = "Defesa";
 	
+	//Number of cars which may be randomed
 	private static final int RANDOM_NUMBER = 9;
 	
+	//background image
 	private Image background;
 	
+	//Pilots movement control
 	private List<UpDevice> pilots;
 	private List<Integer> pilotsPosition;
 	private List<Boolean> pilotsClosed;
@@ -68,12 +78,18 @@ public class StateSelection extends State implements InputListener{
         initCarsTemplates();
 	}
 	
+	/**
+	 * Initiates pilots informations.
+	 */
 	private void initPilots() {
 		pilots = new ArrayList<UpDevice>();
 		pilotsPosition = new ArrayList<Integer>();
 		pilotsClosed = new ArrayList<Boolean>();
 	}
 	
+	/**
+	 * Initiates each team selector color.
+	 */
 	private void initPilotsColors() {
 		pilotsColors = new Color[4];
         pilotsColors[0] = Color.BLUE;
@@ -82,6 +98,9 @@ public class StateSelection extends State implements InputListener{
         pilotsColors[3] = Color.MAGENTA;
 	}
 	
+	/**
+	 * Initiates cars possibilities.
+	 */
 	private void initCarsTemplates() {
 		cars = new CarTemplate[9];
         cars[0] = new CarTemplate(CarTemplate.CAR_BLUE);
@@ -100,7 +119,7 @@ public class StateSelection extends State implements InputListener{
 	public void load(DevicesController devController) {
 		super.load(devController);
 		
-		ImageIcon ii = new ImageIcon(getClass().getResource(MENU_IMAGE_PATH));
+		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource(MENU_IMAGE_PATH));
         this.background = ii.getImage();
         
         loadPilots();
@@ -138,6 +157,10 @@ public class StateSelection extends State implements InputListener{
 		return new Stack(pilots,cars,pilots.size());
 	}
 
+	/**
+	 * If all the pilots chose their cars goes to the next state,
+	 * otherwise it does not change.
+	 */
 	@Override
 	public int update(int dt) {
 		boolean test = true;
@@ -176,6 +199,10 @@ public class StateSelection extends State implements InputListener{
         g.dispose();
 	}
 	
+	/**
+	 * Draws the cars menu and the pilots selectors.
+	 * @param g
+	 */
 	private void printCarsOptions(Graphics2D g) {
 		Graphics2D gCars = (Graphics2D)g.create();
 		
@@ -199,6 +226,10 @@ public class StateSelection extends State implements InputListener{
 		gCars.dispose();
 	}
 	
+	/**
+	 * Draws the big pictures relative to each pilot choice.
+	 * @param g
+	 */
 	private void printBigsOptions(Graphics2D g) {
 		Graphics2D gBigs = (Graphics2D)g.create();
 		
@@ -218,6 +249,14 @@ public class StateSelection extends State implements InputListener{
 		gBigs.dispose();
 	}
 
+	/**
+	 * Draws in the big pictures the cars attributes.
+	 * @param x
+	 * @param y
+	 * @param g
+	 * @param font
+	 * @param carPos
+	 */
 	private void printAttributes(int x, int y, Graphics2D g, Font font, int carPos) {
 		if(carPos==9)
 			return;
@@ -274,7 +313,7 @@ public class StateSelection extends State implements InputListener{
 	}
 	
 	/**
-	 * Gets the inputEvents and make the necessary actions.
+	 * Gets the inputEvents and make the moves the pilots selectors through the options.
 	 */
 	public void inputPerformed(InputEvent e) {
 		
@@ -294,28 +333,47 @@ public class StateSelection extends State implements InputListener{
 		
 		switch(e.getInputCode()){
 			case InputEvent.IC_UP:
-				if(pilotsPosition.get(pos)>1)
+				if(pilotsPosition.get(pos)>1){
 					pilotsPosition.set(pos, pilotsPosition.get(pos) - 2);
+					
+					SoundEffect.CHANGE.play();
+				}
 				break;
 			case InputEvent.IC_DOWN:
-				if(pilotsPosition.get(pos)<8)
+				if(pilotsPosition.get(pos)<8){
 					pilotsPosition.set(pos, pilotsPosition.get(pos) +2);
+				
+					SoundEffect.CHANGE.play();
+				}
 				break;
 			case InputEvent.IC_LEFT:
-				if(pilotsPosition.get(pos)%2 == 1)
+				if(pilotsPosition.get(pos)%2 == 1){
 					pilotsPosition.set(pos, pilotsPosition.get(pos) -1);
+					
+					SoundEffect.CHANGE.play();
+				}
 				break;
 			case InputEvent.IC_RIGHT:
-				if(pilotsPosition.get(pos)%2 == 0)
+				if(pilotsPosition.get(pos)%2 == 0){
 					pilotsPosition.set(pos, pilotsPosition.get(pos) +1);
+				
+					SoundEffect.CHANGE.play();
+				}
 				break;
 			case InputEvent.IC_ACTION:
 				Random generator = new Random();
 				if(pilotsPosition.get(pos)==RANDOM_NUMBER)
 					pilotsPosition.set(pos, Math.abs(generator.nextInt()%9));
+
+				if(!pilotsClosed.get(pos))
+					SoundEffect.PICK.play();
+				
 				pilotsClosed.set(pos, true);
 				break;
 			case InputEvent.IC_ACTION2:
+				if(pilotsClosed.get(pos))
+					SoundEffect.LEAVE.play();
+				
 				pilotsClosed.set(pos, false);
 				break;
 			default:
@@ -325,11 +383,16 @@ public class StateSelection extends State implements InputListener{
 
 	public void inputReleased(InputEvent e) {}
 
-	
+	/**
+	 * If a new device enters the game, initiates its selector.
+	 */
 	public void deviceEntered(DevicesEvent e) {
 		loadPilots();
 	}
 
+	/**
+	 * If a pilot device get out removes its information.
+	 */
 	public void deviceGotOut(DevicesEvent e) {
 		List<Team> teams = devicesController.getTeams();
 		

@@ -4,6 +4,10 @@ import java.awt.Image;
 
 import javax.swing.ImageIcon;
 
+/**
+ * Car types information.
+ *
+ */
 public class CarTemplate {
 
 	//Possible cars
@@ -26,7 +30,8 @@ public class CarTemplate {
 	public static final int MAX_DEFENSE      = 10;
 	public static final int MAX_LIFE         = 100;
 	
-	private static final String GENERAL_PATH = "../images/cars/";
+	//Cars images paths
+	private static final String GENERAL_PATH = "images/cars/";
 	private static final String GENERAL_FRONT_PATH = "fronts/";
 	private static final String GENERAL_CARS_PATH = "cars/";
 	private static final String GENERAL_SMALLS_PATH = "smalls/";
@@ -166,13 +171,13 @@ public class CarTemplate {
 	}
 	
 	private void initBlueCar() {
-		ImageIcon ii = new ImageIcon(getClass().getResource(
+		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_FRONT_PATH+BLUE_NAME+GENERAL_FRONT_IMAGE_NAME+GENERAL_FORMAT));
 		frontImage = ii.getImage();
-		ii = new ImageIcon(getClass().getResource(
+		ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_CARS_PATH+BLUE_NAME+GENERAL_SELECT_IMAGE_NAME+GENERAL_FORMAT));
 		selectImage = ii.getImage();
-		ii = new ImageIcon(getClass().getResource(
+		ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_SMALLS_PATH+BLUE_NAME+GENERAL_GAME_IMAGE_NAME+GENERAL_FORMAT));
 		gameImage = ii.getImage();
 		
@@ -186,13 +191,13 @@ public class CarTemplate {
 	}
 
 	private void initRedCar() {
-		ImageIcon ii = new ImageIcon(getClass().getResource(
+		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_FRONT_PATH+RED_NAME+GENERAL_FRONT_IMAGE_NAME+GENERAL_FORMAT));
 		frontImage = ii.getImage();
-		ii = new ImageIcon(getClass().getResource(
+		ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_CARS_PATH+RED_NAME+GENERAL_SELECT_IMAGE_NAME+GENERAL_FORMAT));
 		selectImage = ii.getImage();
-		ii = new ImageIcon(getClass().getResource(
+		ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_SMALLS_PATH+RED_NAME+GENERAL_GAME_IMAGE_NAME+GENERAL_FORMAT));
 		gameImage = ii.getImage();
 		
@@ -206,13 +211,13 @@ public class CarTemplate {
 	}
 	
 	private void initBlueRedCar() {
-		ImageIcon ii = new ImageIcon(getClass().getResource(
+		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_FRONT_PATH+BLUERED_NAME+GENERAL_FRONT_IMAGE_NAME+GENERAL_FORMAT));
 		frontImage = ii.getImage();
-		ii = new ImageIcon(getClass().getResource(
+		ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_CARS_PATH+BLUERED_NAME+GENERAL_SELECT_IMAGE_NAME+GENERAL_FORMAT));
 		selectImage = ii.getImage();
-		ii = new ImageIcon(getClass().getResource(
+		ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_SMALLS_PATH+BLUERED_NAME+GENERAL_GAME_IMAGE_NAME+GENERAL_FORMAT));
 		gameImage = ii.getImage();
 		
@@ -226,13 +231,13 @@ public class CarTemplate {
 	}
 	
 	private void initBlueWhiteCar() {
-		ImageIcon ii = new ImageIcon(getClass().getResource(
+		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_FRONT_PATH+BLUEWHITE_NAME+GENERAL_FRONT_IMAGE_NAME+GENERAL_FORMAT));
 		frontImage = ii.getImage();
-		ii = new ImageIcon(getClass().getResource(
+		ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_CARS_PATH+BLUEWHITE_NAME+GENERAL_SELECT_IMAGE_NAME+GENERAL_FORMAT));
 		selectImage = ii.getImage();
-		ii = new ImageIcon(getClass().getResource(
+		ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_SMALLS_PATH+BLUEWHITE_NAME+GENERAL_GAME_IMAGE_NAME+GENERAL_FORMAT));
 		gameImage = ii.getImage();
 		
@@ -246,13 +251,13 @@ public class CarTemplate {
 	}
 	
 	private void initGreenWhiteCar() {
-		ImageIcon ii = new ImageIcon(getClass().getResource(
+		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_FRONT_PATH+GREENWHITE_NAME+GENERAL_FRONT_IMAGE_NAME+GENERAL_FORMAT));
 		frontImage = ii.getImage();
-		ii = new ImageIcon(getClass().getResource(
+		ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_CARS_PATH+GREENWHITE_NAME+GENERAL_SELECT_IMAGE_NAME+GENERAL_FORMAT));
 		selectImage = ii.getImage();
-		ii = new ImageIcon(getClass().getResource(
+		ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_SMALLS_PATH+GREENWHITE_NAME+GENERAL_GAME_IMAGE_NAME+GENERAL_FORMAT));
 		gameImage = ii.getImage();
 		
@@ -266,13 +271,13 @@ public class CarTemplate {
 	}
 	
 	private void initWhiteCar() {
-		ImageIcon ii = new ImageIcon(getClass().getResource(
+		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_FRONT_PATH+WHITE_NAME+GENERAL_FRONT_IMAGE_NAME+GENERAL_FORMAT));
 		frontImage = ii.getImage();
-		ii = new ImageIcon(getClass().getResource(
+		ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_CARS_PATH+WHITE_NAME+GENERAL_SELECT_IMAGE_NAME+GENERAL_FORMAT));
 		selectImage = ii.getImage();
-		ii = new ImageIcon(getClass().getResource(
+		ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_SMALLS_PATH+WHITE_NAME+GENERAL_GAME_IMAGE_NAME+GENERAL_FORMAT));
 		gameImage = ii.getImage();
 		
@@ -286,13 +291,13 @@ public class CarTemplate {
 	}
 	
 	private void initRedYellowCar() {
-		ImageIcon ii = new ImageIcon(getClass().getResource(
+		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_FRONT_PATH+REDYELLOW_NAME+GENERAL_FRONT_IMAGE_NAME+GENERAL_FORMAT));
 		frontImage = ii.getImage();
-		ii = new ImageIcon(getClass().getResource(
+		ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_CARS_PATH+REDYELLOW_NAME+GENERAL_SELECT_IMAGE_NAME+GENERAL_FORMAT));
 		selectImage = ii.getImage();
-		ii = new ImageIcon(getClass().getResource(
+		ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_SMALLS_PATH+REDYELLOW_NAME+GENERAL_GAME_IMAGE_NAME+GENERAL_FORMAT));
 		gameImage = ii.getImage();
 		
@@ -306,13 +311,13 @@ public class CarTemplate {
 	}
 	
 	private void initF1BlueCar() {
-		ImageIcon ii = new ImageIcon(getClass().getResource(
+		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_FRONT_PATH+F1BLUE_NAME+GENERAL_FRONT_IMAGE_NAME+GENERAL_FORMAT));
 		frontImage = ii.getImage();
-		ii = new ImageIcon(getClass().getResource(
+		ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_CARS_PATH+F1BLUE_NAME+GENERAL_SELECT_IMAGE_NAME+GENERAL_FORMAT));
 		selectImage = ii.getImage();
-		ii = new ImageIcon(getClass().getResource(
+		ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_SMALLS_PATH+F1BLUE_NAME+GENERAL_GAME_IMAGE_NAME+GENERAL_FORMAT));
 		gameImage = ii.getImage();
 		
@@ -326,13 +331,13 @@ public class CarTemplate {
 	}
 	
 	private void initF1RedCar() {
-		ImageIcon ii = new ImageIcon(getClass().getResource(
+		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_FRONT_PATH+F1RED_NAME+GENERAL_FRONT_IMAGE_NAME+GENERAL_FORMAT));
 		frontImage = ii.getImage();
-		ii = new ImageIcon(getClass().getResource(
+		ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_CARS_PATH+F1RED_NAME+GENERAL_SELECT_IMAGE_NAME+GENERAL_FORMAT));
 		selectImage = ii.getImage();
-		ii = new ImageIcon(getClass().getResource(
+		ii = new ImageIcon(getClass().getClassLoader().getResource(
 				GENERAL_PATH+GENERAL_SMALLS_PATH+F1RED_NAME+GENERAL_GAME_IMAGE_NAME+GENERAL_FORMAT));
 		gameImage = ii.getImage();
 		

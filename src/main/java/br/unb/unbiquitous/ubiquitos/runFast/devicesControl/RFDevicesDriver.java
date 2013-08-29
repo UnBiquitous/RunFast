@@ -15,20 +15,29 @@ import org.unbiquitous.uos.core.messageEngine.messages.ServiceResponse;
 import br.unb.unbiquitous.ubiquitos.runFast.game.Team;
 import br.unb.unbiquitous.ubiquitos.runFast.states.StateManager;
 
+/**
+ * Driver initiated by the uOS in the computer game application to
+ * provide the communication between external devices and the game.
+ *
+ */
 public class RFDevicesDriver implements UosDriver{
 
 	//private static Logger logger = Logger.getLogger(RFDevicesDriver.class);
 
+	//This driver name
 	public static final String RFDEVICES_DRIVER = "br.unb.unbiquitous.ubiquitos.runFast.devicesControl.RFDevicesDriver";
-    
-	public static final String RFDEVICES_EVENT = "RFDevicesEvent";
 	
 
+	//The reference to the game devicesController which will provide to the driver the game information
 	private DevicesController devicesController;
+	//Game state
 	private int state;
 	
 	private Gateway gateway;
-	
+
+	/**
+	 * Gets driver information, name and services.
+	 */
 	public UpDriver getDriver() {
 		UpDriver driver = new UpDriver(RFDEVICES_DRIVER);
 		
@@ -60,6 +69,9 @@ public class RFDevicesDriver implements UosDriver{
 		return new ArrayList<UpDriver>();
 	}
 
+	/**
+	 * Initiates the driver.
+	 */
 	public void init(Gateway gateway, String instanceId) {
 		this.gateway = gateway;
 		state = StateManager.STATE_MENU;

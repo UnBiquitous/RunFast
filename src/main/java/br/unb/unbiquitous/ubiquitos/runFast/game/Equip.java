@@ -6,17 +6,24 @@ import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
+/**
+ * Equips that appears randomly in the map and can be collected.
+ *
+ */
 public class Equip extends GameObject{
 
-	private static final String GENERAL_PATH = "../images/equips/";
+	//equips path
+	private static final String GENERAL_PATH = "images/equips/";
 	
+	//Equip constants identifiers 
 	public static final int EQUIP_TYPE_POWER   = 0x0001;
 	public static final int EQUIP_TYPE_DEFENSE = 0x0002;
 	public static final int EQUIP_TYPE_SPEED   = 0x0003;
 	public static final int EQUIP_TYPE_MONEY   = 0x0004;
-	
-	public static final int EQUIP_BONUS_POWER   = 2;
-	public static final int EQUIP_BONUS_DEFENSE = 2;
+
+	//Equips constants modifiers
+	public static final int EQUIP_BONUS_POWER   = 6;
+	public static final int EQUIP_BONUS_DEFENSE = 6;
 	public static final int EQUIP_BONUS_SPEED   = 20;
 	public static final int EQUIP_BONUS_MONEY   = 20;
 	
@@ -35,23 +42,26 @@ public class Equip extends GameObject{
         box.height = equipImage.getHeight(null);
 	}
 	
+	/**
+	 * Initiates based in the equipType.
+	 */
 	private void initEquip() {
 		ImageIcon ii = null;
 		switch (equipType) {
 			case EQUIP_TYPE_POWER:
-				ii = new ImageIcon(getClass().getResource(GENERAL_PATH+"gun.png"));
+				ii = new ImageIcon(getClass().getClassLoader().getResource(GENERAL_PATH+"gun.png"));
 				break;
 			case EQUIP_TYPE_DEFENSE:
-				ii = new ImageIcon(getClass().getResource(GENERAL_PATH+"tank.png"));
+				ii = new ImageIcon(getClass().getClassLoader().getResource(GENERAL_PATH+"tank.png"));
 				break;
 			case EQUIP_TYPE_SPEED:
-				ii = new ImageIcon(getClass().getResource(GENERAL_PATH+"wheel.png"));
+				ii = new ImageIcon(getClass().getClassLoader().getResource(GENERAL_PATH+"wheel.png"));
 				break;
 			case EQUIP_TYPE_MONEY:
-				ii = new ImageIcon(getClass().getResource(GENERAL_PATH+"coin.png"));
+				ii = new ImageIcon(getClass().getClassLoader().getResource(GENERAL_PATH+"coin.png"));
 				break;
 			default:
-				ii = new ImageIcon(getClass().getResource(GENERAL_PATH+"coin.png"));
+				ii = new ImageIcon(getClass().getClassLoader().getResource(GENERAL_PATH+"coin.png"));
 				break;
 		}
         this.equipImage = ii.getImage();
@@ -62,6 +72,9 @@ public class Equip extends GameObject{
 		return 0;
 	}
 
+	/**
+	 * Renders the equip with the graphic received.
+	 */
 	@Override
 	public void render(Graphics2D g, int cameraX, int cameraY, JPanel panel) {
 		Graphics2D gEquip = (Graphics2D) g.create();
@@ -69,6 +82,9 @@ public class Equip extends GameObject{
 		gEquip.dispose();
 	}
 	
+	/**
+	 * @return the equipType
+	 */
 	public int getEquipType() {
 		return equipType;
 	}

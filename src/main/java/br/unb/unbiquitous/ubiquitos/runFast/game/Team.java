@@ -12,18 +12,27 @@ import br.unb.unbiquitous.ubiquitos.runFast.inputs.InputEvent;
 import br.unb.unbiquitous.ubiquitos.runFast.inputs.InputListener;
 import br.unb.unbiquitous.ubiquitos.runFast.states.StateManager;
 
+/**
+ * Gather the team's characters (also players), filters their actions
+ * and passes the corresponding actions to the team's car.
+ *
+ */
 public class Team implements InputListener{
 
+	//Characters identifiers
 	public static String CHARACTER_PILOT = "pilot";
 	public static String CHARACTER_COPILOT = "copilot";
 	public static String CHARACTER_ASSISTANT = "assistant";
 	
+	//Team number identifier
 	private static int teamNumber = 0;
 
+	//Team's car informations
 	private Car car;
 	private CarTemplate carType;
 	private int thisTeamNumber, blockedMembers;
 
+	//Team's characters
 	private UpDevice pilot;
 	private UpDevice copilot;
 	private List<UpDevice> assistants;
@@ -48,16 +57,32 @@ public class Team implements InputListener{
 		setAssistants(new ArrayList<UpDevice>());
 	}*/
 	
+	/**
+	 * Initiates the team car with the chosen type.
+	 * @param carType
+	 */
 	public void initTeamCar(CarTemplate carType){
 		this.carType = carType;
 		car = new Car(430,470+thisTeamNumber*25,carType);
 	}
 	
+	/**
+	 * Renders the team car
+	 * @param g
+	 * @param cameraX
+	 * @param cameraY
+	 * @param panel
+	 */
 	public void render(Graphics2D g, int cameraX, int cameraY, JPanel panel) {
 		if(car != null)
 			car.render(g, cameraX, cameraY, panel);
 	}
 	
+	/**
+	 * Updates the car
+	 * @param dt
+	 * @return
+	 */
 	public int update(int dt) {
 		if(car != null)
 			return car.update(dt);
@@ -312,13 +337,20 @@ public class Team implements InputListener{
 		--teamNumber;
 	}
 	
+	/**
+	 * Blocks the team
+	 * @param numberOfMembers
+	 */
 	public void blockTeam(int numberOfMembers){
-		if(numberOfMembers > 0){
+		if((numberOfMembers > 0)&&(blockedMembers == 0)){
 			blockedMembers += numberOfMembers;
 			car.blockSpeed();
 		}
 	}
 	
+	/**
+	 * Unblocks the team if all the members are okay with it
+	 */
 	public void unblockTeam(){
 		--blockedMembers;
 		if(blockedMembers<1){

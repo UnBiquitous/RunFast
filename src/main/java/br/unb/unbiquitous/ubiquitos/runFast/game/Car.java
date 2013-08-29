@@ -10,8 +10,13 @@ import java.util.Random;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
+/**
+ * Car object, controlled by some team.
+ *
+ */
 public class Car extends GameObject{
 
+	//Rotation constants identifiers
 	public static final int ROTATE_SPECIFIC = 0x0002;
 	public static final int ROTATE_NONE  = 0x0000;
 	public static final int ROTATE_RIGHT = 0x0001;
@@ -19,14 +24,18 @@ public class Car extends GameObject{
 	public static final int ROTATE_UP    = 0x0100;
 	public static final int ROTATE_DOWN  = 0x1000;
 	
+	//Speed constants
 	private static final int DECELERATION_RATE = 1;
 	private static final int SPEED_MODIFIER = 22;
 	
+	//Max speed when blocked
 	private static final int BLOCKED_SPEED = 60;
 	
+	//Delay time between two bombs
 	private static final int SHOT_BOMB_DELAY = 400;
 	
-	private static final String SIGHT_IMAGE = "../images/game/sight.png";
+	//Sight image path
+	private static final String SIGHT_IMAGE = "images/game/sight.png";
 	
 	//Images draw in the panel
 	private Image carImage, sightImage;
@@ -66,6 +75,12 @@ public class Car extends GameObject{
 	private boolean enableOption;
 	private int option;
 	
+	/**
+	 * Receives the initial point and the carType (CarTemplate) to initiate.
+	 * @param x
+	 * @param y
+	 * @param carType
+	 */
 	public Car(int x, int y, CarTemplate carType) {
 		super(x, y, 0, 0);
 
@@ -92,7 +107,7 @@ public class Car extends GameObject{
 		
 		carImage = carType.getGameImage();
 		
-		ImageIcon ii = new ImageIcon(getClass().getResource(SIGHT_IMAGE));
+		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource(SIGHT_IMAGE));
 		sightImage = ii.getImage();
 	}
 	
@@ -105,6 +120,9 @@ public class Car extends GameObject{
 		resetDead();
 	}
 	
+	/**
+	 * Resurrects the car.
+	 */
 	private void resetDead(){
 		explosion.resetAnimation();
 		isDead = false;
@@ -185,7 +203,9 @@ public class Car extends GameObject{
 		return 0;
 	}
 	
-	//Dead actions:
+	/**
+	 * Verify if the car died and if it did start the dead actions.
+	 */
 	private void verifyIfIsDead(){
 		if(life<1){
 			isDead = true;
@@ -194,9 +214,15 @@ public class Car extends GameObject{
 			explosion.setY(getY() + originalBox.height/2 - (originalBox.height - box.height)/2);
 			speed = 0;
 			unEquipAll();
+			
+			SoundEffect.EXPLOSION.play();
 		}
 	}
 	
+	/**
+	 * Counts the deadTime and makes the dead actions.
+	 * @param dt
+	 */
 	private void deadAction(int dt){
 		if(explosion.isDone()){
 			deadTime += dt;
@@ -651,6 +677,8 @@ public class Car extends GameObject{
 					getY()+ originalBox.height/2 - (originalBox.height - box.height)/2
 					,sightRotation));
 			shotDelay = 0;
+			
+			SoundEffect.SHOOT.play();
 		}
 	}
 	
@@ -667,12 +695,18 @@ public class Car extends GameObject{
 		}
 	}
 
+	/**
+	 * Activates the item being carried, if it needs to choose one car as
+	 * target if must be reactivated.
+	 */
 	public void activateItem() {
 		if(!isEnableOption()) {
 			if(item!=null){
 				if(!item.activate(this)) {
 					item = null;
 					enableOption = false;
+				
+					SoundEffect.LEAVE.play();
 				}else
 					enableOption = true;
 			}
@@ -682,17 +716,15 @@ public class Car extends GameObject{
 				option = 0;
 				item = null;
 				enableOption=false;
+				
+				SoundEffect.LEAVE.play();
 			}
 		}
 	}
 	
-	public void leaveBomb() {
-		if((!isDead)&&(bombDelay>SHOT_BOMB_DELAY)){
-			Map.getInstance().addTrap(new Trap(getX(),getY(),Trap.TRAP_TYPE_BOMB));
-			bombDelay = 0;
-		}
-	}
-	
+	/**
+	 * Changes the item target being chosen.
+	 */
 	public void changeOptionToRight() {
 		if(enableOption)
 			if(option<(Map.getInstance().getNumberOfTeams()-1))
@@ -705,6 +737,19 @@ public class Car extends GameObject{
 				option--;
 	}
 	
+	/**
+	 * The car releases one bomb in its current position. 
+	 */
+	public void leaveBomb() {
+		if((!isDead)&&(bombDelay>SHOT_BOMB_DELAY)){
+			Map.getInstance().addTrap(new Trap(getX(),getY(),Trap.TRAP_TYPE_BOMB));
+			bombDelay = 0;
+			
+			SoundEffect.LEAVE.play();
+		}
+	}
+	
+
 	//Laps verifiers:
 	/**
 	 * Sets the car intoTheLap and if it entered through the right side.
@@ -743,33 +788,29 @@ public class Car extends GameObject{
 	}
 	
 	/**
-	 * @return the isDead
-	 */
-	public boolean isDead() {
-		return isDead;
-	}
-	
-	/**
-	 * @return the deadTime
-	 */
-	public int getDeadTime() {
-		return deadTime;
-	}
-
-	/**
 	 * Receive the damage done by a shot.
 	 */
 	public void receiveShot(int attack){
 		receiveHit(attack);
 	}
 	
+	/**
+	 * Receive the damage of something based in the defense it has.
+	 * @param damage
+	 */
 	public void receiveHit(int damage) {
 		if(damage>this.defense)
 			this.life -= damage-this.defense;
 		else
 			--this.life;
+		
+		SoundEffect.SLAM.play();
 	}
 
+	/**
+	 * Increases the equipType counter and inflicts its effects.
+	 * @param equipType
+	 */
 	public void receiveEquip(int equipType) {
 		switch (equipType) {
 			case Equip.EQUIP_TYPE_POWER:
@@ -790,6 +831,8 @@ public class Car extends GameObject{
 			default:
 				break;
 		}
+		
+		SoundEffect.PICK.play();
 	}
 	
 	/**
@@ -800,6 +843,8 @@ public class Car extends GameObject{
 	public boolean receiveItem(Item item) {
 		if(this.item == null) {
 			this.item = item;
+			
+			SoundEffect.PICK.play();
 			return true;
 		}
 		return false;
@@ -807,11 +852,28 @@ public class Car extends GameObject{
 	
 
 	//Equips Actions
+	/**
+	 * Removes all equips and its effects from the car.
+	 */
 	public void unEquipAll() {
 		defense -= equipDefense*Equip.EQUIP_BONUS_DEFENSE;
 		attack -= equipPower*Equip.EQUIP_BONUS_POWER;
 		speedMax -= equipSpeed*Equip.EQUIP_BONUS_SPEED;
 		equipDefense = equipPower = equipSpeed = 0;
+	}
+
+	/**
+	 * @return the isDead
+	 */
+	public boolean isDead() {
+		return isDead;
+	}
+	
+	/**
+	 * @return the deadTime
+	 */
+	public int getDeadTime() {
+		return deadTime;
 	}
 	
 	/**
@@ -990,6 +1052,7 @@ public class Car extends GameObject{
 		return null;
 	}
 
+	//Block methods:
 	/**
 	 * @return the isSpeedBloqued
 	 */
@@ -997,10 +1060,16 @@ public class Car extends GameObject{
 		return isSpeedBlocked;
 	}
 	
+	/**
+	 * Unblocks the car speed.
+	 */
 	public void unblockSpeed() {
 		isSpeedBlocked = false;
 	}
 	
+	/**
+	 * Blocks the car speed.
+	 */
 	public void blockSpeed() {
 		isSpeedBlocked = true;
 	}

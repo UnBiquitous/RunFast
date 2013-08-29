@@ -4,6 +4,10 @@ import java.util.EventObject;
 
 import org.unbiquitous.uos.core.messageEngine.dataType.UpDevice;
 
+/**
+ * Event fired when one device get in or out of the game.
+ *
+ */
 public class DevicesEvent extends EventObject {
 
 	/**
@@ -13,6 +17,11 @@ public class DevicesEvent extends EventObject {
 	
 	private UpDevice device;
 	
+	/**
+	 * Constructor, initiates referenced device.
+	 * @param source
+	 * @param device
+	 */
 	public DevicesEvent(Object source, UpDevice device) {
 		super(source);
 		this.setDevice(device);
