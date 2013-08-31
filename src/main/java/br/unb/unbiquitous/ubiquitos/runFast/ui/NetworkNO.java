@@ -28,7 +28,7 @@ public class NetworkNO extends EthernetTCPConnectionManager{
 		if(serverDevice == null){
 			//The IP of the computer running the main game must be in the following string:
 			//return new EthernetDevice("COMPUTER IP!", 14984, EthernetConnectionType.TCP);
-		 	return new EthernetDevice("192.168.1.4", 14984, EthernetConnectionType.TCP);
+		 	return new EthernetDevice("192.168.1.3", 14984, EthernetConnectionType.TCP);
 		}
 		return serverDevice;
 	}

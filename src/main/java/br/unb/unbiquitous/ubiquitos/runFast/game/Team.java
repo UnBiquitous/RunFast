@@ -67,6 +67,13 @@ public class Team implements InputListener{
 	}
 	
 	/**
+	 * Resets the car position and its status
+	 */
+	public void resetTeamCar(){
+		car.resetCar(430,470+thisTeamNumber*25);
+	}
+	
+	/**
 	 * Renders the team car
 	 * @param g
 	 * @param cameraX

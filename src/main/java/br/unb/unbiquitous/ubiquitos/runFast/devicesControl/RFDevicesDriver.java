@@ -54,6 +54,9 @@ public class RFDevicesDriver implements UosDriver{
 		driver.addService("breakResult")
 			.addParameter("deviceName", ParameterType.MANDATORY);
 		
+		driver.addService("isCarTypeAvailable")
+			.addParameter("carType", ParameterType.MANDATORY);
+		
 		driver.addService("requestPlayerJoin")
 			.addParameter("deviceName", ParameterType.MANDATORY)
 			.addParameter("teamNumber", ParameterType.MANDATORY)
@@ -187,6 +190,20 @@ public class RFDevicesDriver implements UosDriver{
 			}
 		}
 	}
+	
+	/**
+	 * Verifies if some carType is available to be chosen.
+	 * @param serviceCall
+	 * @param serviceResponse
+	 * @param messageContext
+	 */
+	public void isCarTypeAvailable(ServiceCall serviceCall, 
+			ServiceResponse serviceResponse, UOSMessageContext messageContext) {
+		
+		serviceResponse.addParameter("isCarTypeAvailable",
+				devicesController.isCarTypeAvailable((Integer)serviceCall.getParameter("carType")));
+	}
+	
 	
 	/**
 	 * A new device requests a place in the game.

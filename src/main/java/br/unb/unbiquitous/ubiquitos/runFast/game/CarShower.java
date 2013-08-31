@@ -84,6 +84,9 @@ public class CarShower extends GameObject{
         //Define colors
         gShower.setColor(Color.WHITE);
         gShower.setFont(font);
+        
+        //Draws car image as an identifier
+        gShower.drawImage(car.getCarImage(), box.x+60+cameraX, box.y+cameraY +(metr.getHeight()+10), panel);
 
         //Draws the attributes
         gShower.drawString(TXT_TEAM   +teamName         , box.x+cameraX, box.y+cameraY +(metr.getHeight()+5)*2);

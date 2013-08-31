@@ -53,7 +53,7 @@ public class StateManager implements Runnable{
 	public StateManager(Gateway gateway){
 		this.gateway = gateway;
 		//devicesController = new DevicesController(gateway);
-		devicesController = new DevicesController(gateway,false);
+		devicesController = new DevicesController(gateway,true);
 		devicesController.startDevicesController();
 
 		estadoAtual = new StateMenu();
