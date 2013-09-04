@@ -292,7 +292,7 @@ public class DevicesController{
 	public boolean addPlayer(UpDevice device, String character, int carType){
 		boolean hadJoined = false;
 		//New Team
-		if(character.equals("pilot")){
+		if(character.equals("pilot")&&(isCarTypeAvailable(carType))){
 			teams.add(new Team(device));
 			teams.get(teams.size()-1).initTeamCar(new CarTemplate(carType));
 			initDevice(device);
@@ -307,6 +307,21 @@ public class DevicesController{
 		InputManager.GetInstance().registerDriver(gateway, device);
 		gameDevices.add(device);
 		fireDeviceEntered(device);
+	}
+	
+	/**
+	 * Verifies if some carType is available to be chosen.
+	 * @param carType
+	 * @return
+	 */
+	public boolean isCarTypeAvailable(int carType){
+		
+		for(int i=0; i<teams.size(); ++i){
+			if(teams.get(i).getCarType()!=null)
+				if(teams.get(i).getCarType().getCarId() == carType)
+					return false;
+		}
+		return true;
 	}
 	
 	/**

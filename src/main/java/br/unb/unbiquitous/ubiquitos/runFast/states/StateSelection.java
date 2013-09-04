@@ -44,6 +44,10 @@ public class StateSelection extends State implements InputListener{
 	//Menu image path
 	private static final String MENU_IMAGE_PATH = "images/image_menu.jpg";
 	
+	//Time selection image paths
+	private static final String TIME_LEFT_IMAGE_PATH  = "images/selection/left.png";
+	private static final String TIME_RIGHT_IMAGE_PATH = "images/selection/right.png";
+	
 	//Shown menu strings
 	private static final String MSG_SPEED        = "Velocidade";
 	private static final String MSG_ACCELERATION = "Aceleração";
@@ -53,9 +57,28 @@ public class StateSelection extends State implements InputListener{
 	
 	//Number of cars which may be randomed
 	private static final int RANDOM_NUMBER = 9;
+
+	//Number of cars
+	private static final int CARS_NUMBER = 8;
+	
+	//Selectors bounds
+	private static final int SELECT_TOP_LIMIT = -1;
+	//private static final int SELECT_TOP_LIMIT = 1;
+	private static final int SELECT_BOT_LIMIT = 8;
+	
+	//Time selectors positions
+	private static final int TIME_SELECT_LEFT = -2;
+	private static final int TIME_SELECT_RIGHT = -1;
+	
 	
 	//background image
 	private Image background;
+	
+	//Race time related
+	private int time;
+	
+	//Time selectors images
+	private Image timeLeft, timeRight;
 	
 	//Pilots movement control
 	private List<UpDevice> pilots;
@@ -71,7 +94,8 @@ public class StateSelection extends State implements InputListener{
         setFocusable(true);
         setSize(Window.WINDOW_WIDTH, Window.WINDOW_HEIGHT);
         
-        background = null;
+        timeLeft = timeRight = background = null;
+        time = 180000;
         
         initPilots();
         initPilotsColors();
@@ -120,7 +144,11 @@ public class StateSelection extends State implements InputListener{
 		super.load(devController);
 		
 		ImageIcon ii = new ImageIcon(getClass().getClassLoader().getResource(MENU_IMAGE_PATH));
-        this.background = ii.getImage();
+        background = ii.getImage();
+        ii = new ImageIcon(getClass().getClassLoader().getResource(TIME_LEFT_IMAGE_PATH));
+        timeLeft = ii.getImage();
+        ii = new ImageIcon(getClass().getClassLoader().getResource(TIME_RIGHT_IMAGE_PATH));
+        timeRight = ii.getImage();
         
         loadPilots();
 	}
@@ -154,7 +182,7 @@ public class StateSelection extends State implements InputListener{
 			cars[i] = this.cars[pilotsPosition.get(i)];
 		}
 		
-		return new Stack(pilots,cars,pilots.size());
+		return new Stack(pilots,cars,pilots.size(),time);
 	}
 
 	/**
@@ -192,6 +220,8 @@ public class StateSelection extends State implements InputListener{
         Graphics2D gBigs = (Graphics2D)g.create();
         
         printBigsOptions(gBigs);
+
+        printTimeOptions((Graphics2D)g.create());
         
         Toolkit.getDefaultToolkit().sync();
         gBackground.dispose();
@@ -219,8 +249,12 @@ public class StateSelection extends State implements InputListener{
 		
 		for(i=0;i<pilotsPosition.size();++i) {
 			gCars.setColor(pilotsColors[i]);
-			gCars.drawRect(465 + ((pilotsPosition.get(i)%2)*175),
-					140 + ((pilotsPosition.get(i)/2)*76), 175, 76);
+			if(pilotsPosition.get(i)>SELECT_TOP_LIMIT)
+				gCars.drawRect(465 + ((pilotsPosition.get(i)%2)*175),
+						140 + ((pilotsPosition.get(i)/2)*76), 175, 76);
+			else
+				gCars.drawRect(570 - ((pilotsPosition.get(i)%2)*110),
+						20, 60, 60);
 		}
 		
 		gCars.dispose();
@@ -239,7 +273,7 @@ public class StateSelection extends State implements InputListener{
         for(int i=0;i<pilotsPosition.size();++i) {
         	dx = (i%2)*814;
 			dy= (i/2)*293;
-			if(pilotsPosition.get(i)!=RANDOM_NUMBER){
+			if((pilotsPosition.get(i)!=RANDOM_NUMBER) && (pilotsPosition.get(i)>SELECT_TOP_LIMIT)){
 				gBigs.drawImage(cars[pilotsPosition.get(i)].getFrontImage(), 41+dx, 75+dy, this);
 				gBigs.drawRect(41+dx, 75+dy, 384, 218);
 				printAttributes(56+dx, 90+dy, gBigs, font, pilotsPosition.get(i));
@@ -313,6 +347,23 @@ public class StateSelection extends State implements InputListener{
 	}
 	
 	/**
+	 * Draws the time options
+	 * @param g
+	 */
+	private void printTimeOptions(Graphics2D g) {
+		
+		Graphics2D g2d = (Graphics2D)g.create();
+        g2d.setColor(Color.WHITE);
+		g2d.setFont(new Font("Helvetica", Font.BOLD, 28));
+		g2d.drawString(""+(time/1000), Window.WINDOW_WIDTH/2 - 10, 60);
+		
+		g2d.drawImage(timeLeft, Window.WINDOW_WIDTH/2 - 70, 20, this);
+		g2d.drawImage(timeRight, Window.WINDOW_WIDTH/2 + 40, 20, this);
+		
+		g2d.dispose();
+	}
+	
+	/**
 	 * Gets the inputEvents and make the moves the pilots selectors through the options.
 	 */
 	public void inputPerformed(InputEvent e) {
@@ -333,21 +384,21 @@ public class StateSelection extends State implements InputListener{
 		
 		switch(e.getInputCode()){
 			case InputEvent.IC_UP:
-				if(pilotsPosition.get(pos)>1){
+				if(pilotsPosition.get(pos)>SELECT_TOP_LIMIT){
 					pilotsPosition.set(pos, pilotsPosition.get(pos) - 2);
 					
 					SoundEffect.CHANGE.play();
 				}
 				break;
 			case InputEvent.IC_DOWN:
-				if(pilotsPosition.get(pos)<8){
+				if(pilotsPosition.get(pos)<SELECT_BOT_LIMIT){
 					pilotsPosition.set(pos, pilotsPosition.get(pos) +2);
 				
 					SoundEffect.CHANGE.play();
 				}
 				break;
 			case InputEvent.IC_LEFT:
-				if(pilotsPosition.get(pos)%2 == 1){
+				if(Math.abs(pilotsPosition.get(pos)%2) == 1){
 					pilotsPosition.set(pos, pilotsPosition.get(pos) -1);
 					
 					SoundEffect.CHANGE.play();
@@ -361,14 +412,30 @@ public class StateSelection extends State implements InputListener{
 				}
 				break;
 			case InputEvent.IC_ACTION:
+				//Random position
 				Random generator = new Random();
-				if(pilotsPosition.get(pos)==RANDOM_NUMBER)
-					pilotsPosition.set(pos, Math.abs(generator.nextInt()%9));
-
-				if(!pilotsClosed.get(pos))
-					SoundEffect.PICK.play();
+				if(pilotsPosition.get(pos)==RANDOM_NUMBER){
+					do{
+						pilotsPosition.set(pos, Math.abs(generator.nextInt()%9));
+					}while(!isOptionAvailable(pilotsPosition.get(pos)));
+				}
 				
-				pilotsClosed.set(pos, true);
+				//Time selector position
+				if(pilotsPosition.get(pos)<=SELECT_TOP_LIMIT) {
+					if((pilotsPosition.get(pos)==TIME_SELECT_LEFT)&&(time>120000))
+						time -= 60000;
+					else if((pilotsPosition.get(pos)==TIME_SELECT_RIGHT)&&(time<300000))
+						time += 60000;
+					
+				//Closing the selection in some car
+				}else if(!pilotsClosed.get(pos)){
+					if(isOptionAvailable(pilotsPosition.get(pos))){
+						SoundEffect.PICK.play();
+						pilotsClosed.set(pos, true);
+					}else
+						SoundEffect.SLAM.play();
+				}
+				
 				break;
 			case InputEvent.IC_ACTION2:
 				if(pilotsClosed.get(pos))
@@ -379,6 +446,23 @@ public class StateSelection extends State implements InputListener{
 			default:
 				break;
 		}
+	}
+	
+	/**
+	 * Verifies if an car option is available or had already been chosen.
+	 * @param pos
+	 * @return
+	 */
+	private boolean isOptionAvailable(int pos){
+		
+		for(int i=0; i<pilots.size(); ++i) {
+			if(pilotsClosed.get(i)){
+				if(pilotsPosition.get(i) == pos)
+					return false;
+			}
+		}
+		
+		return true;
 	}
 
 	public void inputReleased(InputEvent e) {}

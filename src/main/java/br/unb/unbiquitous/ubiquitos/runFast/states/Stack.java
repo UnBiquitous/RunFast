@@ -20,6 +20,8 @@ public class Stack {
 	private int length;
 	private CarTemplate cars[];
 	
+	private int time;
+	
 	/**
 	 * Initiates an empty stack.
 	 */
@@ -32,12 +34,14 @@ public class Stack {
 	 * @param devices
 	 * @param cars
 	 * @param length
+	 * @param time
 	 */
-	public Stack(List<UpDevice> devices, CarTemplate cars[], int length) {
+	public Stack(List<UpDevice> devices, CarTemplate cars[], int length, int time) {
 		empty = !STACK_EMPTY;
 		this.devices = devices;
 		this.cars = cars;
 		this.length = length;
+		this.time = time;
 	}
 
 	/**
@@ -67,6 +71,12 @@ public class Stack {
 	public CarTemplate[] getCars() {
 		return cars;
 	}
-	
+
+	/**
+	 * @return the time
+	 */
+	public int getTime() {
+		return time;
+	}
 	
 }

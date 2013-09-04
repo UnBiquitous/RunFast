@@ -130,6 +130,8 @@ public class CarTemplate {
 	private static final int F1RED_DEFENSE      = 2;
 	private static final int F1RED_LIFE         = 100;
 	
+	//Car type identifier
+	private int carId;
 	//Images
 	private Image frontImage,selectImage,gameImage;
 	//Attributes
@@ -139,6 +141,7 @@ public class CarTemplate {
 	private int attack, defense, life;
 	
 	public CarTemplate(int carType) {
+		this.carId = carType;
 		switch(carType) {
 			case CAR_BLUE:
 				initBlueCar();
@@ -391,4 +394,12 @@ public class CarTemplate {
 	public int getLife() {
 		return life;
 	}
+
+	/**
+	 * @return the carType
+	 */
+	public int getCarId() {
+		return carId;
+	}
+	
 }
