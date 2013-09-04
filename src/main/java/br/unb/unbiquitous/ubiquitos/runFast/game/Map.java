@@ -39,8 +39,8 @@ public class Map extends GameObject{
 	private static final String MAP_IMAGE_PATH = "images/game/map.jpg";
 
 	//Race time
-	private static final int MAP_TIME = 180000;
-	private static final int MAP_TEAM_INCREASE_TIME = 10000;
+	private static final int DEFAULT_MAP_TIME = 180000;
+	private static final int MAP_TEAM_INCREASE_TIME = 20000;
 	
 	private DevicesController devicesController;
 	
@@ -48,7 +48,7 @@ public class Map extends GameObject{
 	
 	private Random random = null;
 	
-	private int time;
+	private int time, maxTime;
 	
 	//Game objects:
 	private List<Team> teams;
@@ -101,7 +101,7 @@ public class Map extends GameObject{
         devicesController = devController;
         
         random = new Random();
-        time = MAP_TIME;
+        maxTime = time = DEFAULT_MAP_TIME;
         
         initFromStack(devController, stack);
 	}
@@ -119,6 +119,8 @@ public class Map extends GameObject{
 		traps = new ArrayList<Trap>();
 		
 		if(!stack.isEmpty()) {
+			maxTime = time = stack.getTime();
+			
 			int i;
 			for(i=0;i<stack.getLength();++i) {
 				teams.get(i).initTeamCar(stack.getCars()[i]);
@@ -477,6 +479,11 @@ public class Map extends GameObject{
 	public void updateTeams(){
 		//If there is a new team
 		if(teamsShowers.size() < teams.size()){
+			if(teamsShowers.size()==1){
+				teamsShowers.get(0).getTeam().resetTeamCar();
+				time = maxTime-MAP_TEAM_INCREASE_TIME;
+			}
+			
 			boolean found = false;
 			for(int i=0; i<teams.size(); ++i){
 				found = false;

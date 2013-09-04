@@ -55,6 +55,9 @@ public class Car extends GameObject{
 	private boolean collided;
 	private int topCollision, leftCollision, bottomCollision, rightCollision;
 	
+	//Car type
+	private CarTemplate carType;
+	
 	//Attributes
 	private int speed, speedMax, acceleration;
 	private boolean accelerating, isSpeedBlocked;
@@ -84,15 +87,29 @@ public class Car extends GameObject{
 	public Car(int x, int y, CarTemplate carType) {
 		super(x, y, 0, 0);
 
-		initImages(carType);
-		initDeadInfos();
+		this.carType = carType;
+		
+		initImages();
+		resetCar(x, y);
 		
 		box.width = carImage.getWidth(null);
 		box.height = carImage.getHeight(null);
 		
 		originalBox = new Rectangle(box);
 		
-		initAttributes(carType);
+	}
+	
+	/**
+	 * Resets car status
+	 * @param x
+	 * @param y
+	 */
+	public void resetCar(int x, int y){
+		box.x = x;
+		box.y = y;
+		
+		initDeadInfos();
+		initAttributes();
 		initColliders();
 		shots = new ArrayList<Bullet>();
 		enableOption = false;
@@ -103,7 +120,7 @@ public class Car extends GameObject{
 	 * Initialize the cars images based in the carType.
 	 * @param carType
 	 */
-	private void initImages(CarTemplate carType) {
+	private void initImages() {
 		
 		carImage = carType.getGameImage();
 		
@@ -132,7 +149,7 @@ public class Car extends GameObject{
 	/**
 	 * Initialize the car attributes with the carTemplate.
 	 */
-	private void initAttributes(CarTemplate carType) {
+	private void initAttributes() {
 		speed = 0;
 		speedMax = carType.getSpeedMax();
 		isSpeedBlocked = false;
@@ -951,6 +968,21 @@ public class Car extends GameObject{
 		money += bonus;
 	}
 	
+	/**
+	 * @return the carType
+	 */
+	public CarTemplate getCarType() {
+		return carType;
+	}
+
+	/**
+	 * @param carType the carType to set
+	 */
+	public void setCarType(CarTemplate carType) {
+		this.carType = carType;
+	}
+	
+	
 	//Rotations
 	/**
 	 * @return if is rotating
@@ -1073,4 +1105,5 @@ public class Car extends GameObject{
 	public void blockSpeed() {
 		isSpeedBlocked = true;
 	}
+
 }
